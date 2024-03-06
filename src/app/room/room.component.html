@@ -1,0 +1,15 @@
+<app-content-box>
+  <div class="font-medium text-2xl mb-8">
+    <h1>Welcome {{ userName }} | Room 123456</h1>
+  </div>
+  <div id="PlayersContainer" class="flex flex-wrap justify-center gap-4">
+    @for( user of MOCKED_USERS; track user) {
+    <app-user-box
+      [user]="user"
+      (kickUserEvent)="handleKickuserByName($event)"
+    ></app-user-box>
+    }
+  </div>
+</app-content-box>
+
+<app-content-box> </app-content-box>

@@ -1,0 +1,100 @@
+<div
+  class="group flex flex-col text-center text-neutral-700 bg-white rounded-md p-4 shadow-lg hover:shadow-xl transition-all relative"
+>
+  <div class="absolute right-1 top-1" #OptionsMenu>
+    <button
+      type="button"
+      class="opacity-25 group-hover:opacity-100"
+      (click)="handleToggleShowOptions($event)"
+    >
+      <fa-icon [icon]="ICONS.options" [fixedWidth]="true" [size]="'1x'" />
+    </button>
+    @if(showOptions$ | async) {
+    <div
+      class="absolute bg-white/75 backdrop-blur-md rounded-md right-0 w-auto text-nowrap shadow-md overflow-hidden"
+    >
+      <ul>
+        <li class="hover:bg-neutral-300/25 px-4 py-2">
+          @if(isVotter$ | async) {
+          <button type="button" (click)="handleToggleVotter($event, false)">
+            <fa-icon [icon]="ICONS.mugHot" [fixedWidth]="true" /> Turn as
+            spectator
+          </button>
+          } @else {
+          <button type="button" (click)="handleToggleVotter($event, true)">
+            <fa-icon [icon]="ICONS.rightToBracket" [fixedWidth]="true" /> Turn
+            as votter
+          </button>
+          }
+        </li>
+        <li class="hover:bg-neutral-300/25 px-4 py-2">
+          <button type="button" (click)="handleTurnAdmin($event, user())">
+            <fa-icon [icon]="ICONS.handshake" [fixedWidth]="true" />
+            Turn as admin
+          </button>
+        </li>
+        <li class="hover:bg-red-300/25 px-4 py-2 text-red-600">
+          <button type="button" (click)="handleKick($event, user())">
+            <fa-icon [icon]="ICONS.rightToBracket" [fixedWidth]="true" />
+            Kick from the room
+          </button>
+        </li>
+      </ul>
+    </div>
+    }
+  </div>
+  <div>
+    <fa-icon
+      [icon]="ICONS.userCircle"
+      [fixedWidth]="true"
+      [size]="'5x'"
+      class=""
+    />
+  </div>
+  <div class="mt-4">
+    {{ user() }}
+  </div>
+</div>
+
+<app-popup-alert [showAlert]="!!(showAdminAlert$ | async)">
+  <div title>Hey, look out!</div>
+  <div body class="flex flex-col text-center">
+    <div class="text-red-600 my-4">
+      <fa-icon [icon]="ICONS.exclamation" [fixedWidth]="true" [size]="'3x'" />
+    </div>
+    <div class="mb-4 text-lg">
+      Only one person can be administrator of this room<br />
+      If you turn {{ user() }} as admin, you will immediately lose your
+      administrator rights
+    </div>
+    <div class="mb-4 text-xl">Are you sure about this?</div>
+  </div>
+  <div actions class="flex gap-4">
+    <button
+      type="button"
+      class="w-full h-16 hover:bg-white/50 rounded-lg transition-all font-bold"
+      (click)="handleCancelTurnAdmin($event)"
+    >
+      <fa-icon
+        [icon]="ICONS.xmark"
+        [fixedWidth]="true"
+        [size]="'1x'"
+        class=""
+      />
+      No, cancel!
+    </button>
+    <button
+      type="button"
+      class="w-full h-16 hover:bg-red-600/50 text-red-600 hover:text-black rounded-lg transition-all font-bold"
+      (click)="handleConfirmTurnAdmin($event)"
+    >
+      <fa-icon
+        [icon]="ICONS.check"
+        [fixedWidth]="true"
+        [size]="'1x'"
+        class=""
+      />
+      Yes, I'm sure.
+    </button>
+  </div>
+</app-popup-alert>

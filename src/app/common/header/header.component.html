@@ -1,0 +1,35 @@
+<header class="h-16 w-full sticky top-2">
+  <div
+    class="container flex justify-between mx-auto h-full bg-neutral-950/10 px-8 rounded-3xl backdrop-blur overflow-hidden"
+  >
+    <div class="site-logo h-full flex align-middle items-center">
+      <span> Carteado Dev </span>
+    </div>
+    <nav class="flex align-middle">
+      <button
+        type="button"
+        [routerLink]="'/'"
+        class="hover:bg-neutral-950/20 px-4 transition-all"
+      >
+        <fa-icon [icon]="ICONS.home" [fixedWidth]="true" />
+        Home
+      </button>
+      <button type="button" class="hover:bg-neutral-950/10 px-4 transition-all">
+        <fa-icon [icon]="ICONS.createRoom" [fixedWidth]="true" />
+        Create a room
+      </button>
+      <button type="button" class="hover:bg-neutral-950/10 px-4 transition-all">
+        <fa-icon [icon]="ICONS.joinRoom" [fixedWidth]="true" />
+        Join a room
+      </button>
+      <button
+        type="button"
+        [routerLink]="'about'"
+        class="hover:bg-neutral-950/10 px-4 transition-all"
+      >
+        <fa-icon [icon]="ICONS.about" [fixedWidth]="true" />
+        About
+      </button>
+    </nav>
+  </div>
+</header>

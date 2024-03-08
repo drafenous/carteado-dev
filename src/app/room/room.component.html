@@ -1,6 +1,11 @@
 <app-content-box>
-  <div class="font-medium text-2xl mb-8">
-    <h1>Welcome {{ userName }} | Room 123456</h1>
+  <div class="flex flex-col md:flex-row justify-between gap-8 mb-8">
+    <div class="font-medium text-2xl">
+      <h1>Welcome {{ userName }} | Room 123456</h1>
+    </div>
+    <div>
+      <app-user-actions />
+    </div>
   </div>
   <div id="PlayersContainer" class="flex flex-wrap justify-center gap-4">
     @for( user of MOCKED_USERS; track user) {

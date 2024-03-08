@@ -5,6 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ContentBoxComponent } from '../common/content-box/content-box.component';
 import { User } from '../core/models/user';
 import { AppService } from '../core/services/app.service';
+import { UserActionsComponent } from './user-actions/user-actions.component';
 import { UserBoxComponent } from './user-box/user-box.component';
 
 @Component({
@@ -16,6 +17,7 @@ import { UserBoxComponent } from './user-box/user-box.component';
     RouterModule,
     FontAwesomeModule,
     UserBoxComponent,
+    UserActionsComponent,
   ],
   templateUrl: './room.component.html',
   styleUrl: './room.component.scss',

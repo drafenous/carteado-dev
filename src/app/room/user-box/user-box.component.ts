@@ -10,11 +10,10 @@ import {
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../../core/models/user';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
-import { TooltipComponent } from '../../common/tooltip/tooltip.component';
 
 @Component({
     selector: 'app-user-box',
-    imports: [FontAwesomeModule, CommonModule, ContextMenuComponent, TooltipComponent],
+    imports: [FontAwesomeModule, CommonModule, ContextMenuComponent],
     templateUrl: './user-box.component.html',
     styleUrl: './user-box.component.scss'
 })

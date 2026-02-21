@@ -3,15 +3,14 @@
 >
   @if (isAdmin()) {
   <div class="absolute right-1 top-1 z-20" #OptionsMenu>
-    <app-tooltip text="Options">
-      <button
-        type="button"
+    <button
+      type="button"
+      aria-label="Options"
       class="opacity-25 group-hover:opacity-100 text-[var(--text-muted)]"
-        (click)="handleToggleShowOptions()"
-      >
-        <fa-icon [icon]="ICONS.options" [fixedWidth]="true" [size]="'1x'" />
-      </button>
-    </app-tooltip>
+      (click)="handleToggleShowOptions()"
+    >
+      <fa-icon [icon]="ICONS.options" [fixedWidth]="true" [size]="'1x'" />
+    </button>
     <app-context-menu
       [isShown]="!!(showContextMenu$ | async)"
       [user]="user()"

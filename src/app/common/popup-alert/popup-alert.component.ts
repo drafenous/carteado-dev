@@ -33,4 +33,6 @@ import { Component, input } from '@angular/core';
 })
 export class PopupAlertComponent {
   public showAlert = input<boolean>();
+  // When true, use a wider max-width for large summaries/dialogs
+  public wide = input<boolean>(false);
 }

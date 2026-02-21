@@ -1,23 +1,23 @@
 <app-content-box>
   <div class="flex flex-col md:flex-row justify-between gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
     <div class="font-medium text-xl sm:text-2xl flex flex-wrap items-center gap-2">
-    <h1>Welcome {{ userName }} | Room {{ roomState?.roomId || '-' }}</h1>
+    <h1>{{ 'room.welcomeRoom' | t:{ name: userName, roomId: (roomState?.roomId || '-') } }}</h1>
       @if (roomState?.roomId) {
       <div class="flex gap-1.5">
-        <app-tooltip text="Copy room ID">
+        <app-tooltip [text]="'room.copyRoomId' | t">
           <button
             type="button"
-            aria-label="Copy room ID"
+            [attr.aria-label]="'room.copyRoomId' | t"
             class="btn-minimal h-10 w-10 inline-flex items-center justify-center text-sm sm:text-base"
             (click)="copyRoomId()"
           >
             <fa-icon [icon]="ICONS.copy" [fixedWidth]="true" />
           </button>
         </app-tooltip>
-        <app-tooltip text="Copy room link">
+        <app-tooltip [text]="'room.copyRoomLink' | t">
           <button
             type="button"
-            aria-label="Copy room link"
+            [attr.aria-label]="'room.copyRoomLink' | t"
             class="btn-minimal h-10 w-10 inline-flex items-center justify-center text-sm sm:text-base"
             (click)="copyRoomLink()"
           >
@@ -43,13 +43,13 @@
       ></app-user-box>
       @if (roomState?.voting?.isRevealed) {
       <div class="mt-2 text-sm text-neutral-700">
-        Vote: <strong>{{ roomState?.voting?.votes?.[user.id] || '-' }}</strong>
+        {{ 'room.voteLabel' | t }}: <strong>{{ roomState?.voting?.votes?.[user.id] || '-' }}</strong>
       </div>
       }
     </div>
     }
     } @else {
-    <div class="text-neutral-500">No players yet</div>
+    <div class="text-neutral-500">{{ 'room.noPlayersYet' | t }}</div>
     }
   </div>
   @if (roomState?.users?.length) {
@@ -60,7 +60,7 @@
       (click)="showHistoryPopup = true"
     >
       <fa-icon [icon]="ICONS.clockRotateLeft" [fixedWidth]="true" />
-      View voting history
+      {{ 'room.viewVotingHistory' | t }}
     </button>
     @if (roomState?.voting?.isRevealed && votingSummaryDetail) {
     <button
@@ -69,7 +69,7 @@
       (click)="showSummaryPopup = true; selectedRoundForSummary = null"
     >
       <fa-icon [icon]="ICONS.chartSimple" [fixedWidth]="true" />
-      View voting summary
+      {{ 'room.viewVotingSummary' | t }}
     </button>
     }
     @if (isCurrentUserAdmin && !roomState?.voting?.isRevealed) {
@@ -78,7 +78,8 @@
       class="btn-primary inline-flex items-center gap-2 px-3 py-2 sm:px-4 text-sm"
       (click)="roomStore.revealVotes(roomState?.roomId || '', currentUserId || '')"
     >
-      Reveal votes
+      <fa-icon [icon]="ICONS.eye" [fixedWidth]="true" />
+      {{ 'room.revealVotes' | t }}
     </button>
     }
     @if (isCurrentUserAdmin && roomState?.voting?.isRevealed) {
@@ -87,7 +88,8 @@
       class="btn-primary inline-flex items-center gap-2 px-3 py-2 sm:px-4 text-sm"
       (click)="roomStore.resetVoting(roomState?.roomId || '', currentUserId || '')"
     >
-      New round
+      <fa-icon [icon]="ICONS.rotateRight" [fixedWidth]="true" />
+      {{ 'room.newRound' | t }}
     </button>
     }
   </div>
@@ -111,81 +113,99 @@
 </app-content-box>
 }
 
-@if (roomState?.voting?.isRevealed && votingSummaryDetail || selectedRoundForSummary) {
-<app-popup-alert [showAlert]="showSummaryPopup">
-  @if (displayedSummary; as summary) {
-  <div title>Voting summary{{ summary.roundNumber > 0 ? ' - Round ' + summary.roundNumber : '' }}</div>
-  }
-  @if (displayedSummary; as summary) {
+@if (displayedSummary; as summary) {
+<app-popup-alert [showAlert]="showSummaryPopup" [wide]="true">
+  <div title>{{ 'room.votingSummaryTitle' | t }}{{ summary.roundNumber > 0 ? (' - ' + ('room.round' | t) + ' ' + summary.roundNumber) : '' }}</div>
   <div body class="flex flex-col gap-4 text-left min-w-0 w-full">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-      <div class="text-neutral-600">Ticket ID:</div>
-      <div class="font-semibold">{{ summary.ticketId || '-' }}</div>
-      <div class="text-neutral-600">Average:</div>
-      <div class="font-semibold">{{ summary.average }}</div>
-      <div class="text-neutral-600">Min / Max:</div>
-      <div class="font-semibold">{{ summary.min }} / {{ summary.max }}</div>
-      <div class="text-neutral-600">Sum:</div>
-      <div class="font-semibold">{{ summary.sum }}</div>
-      <div class="text-neutral-600">Total votes:</div>
-      <div class="font-semibold">{{ summary.totalVotes }}</div>
-      <div class="text-neutral-600">With value (count):</div>
-      <div class="font-semibold">{{ summary.votesWithValue }}</div>
-      <div class="text-neutral-600">Ignored (value 0):</div>
-      <div class="font-semibold">{{ summary.votesIgnored }}</div>
+    <div class="flex w-full gap-4 flex-col md:flex-row">
+      <!-- Column 1: Summary of votes (basis 25%) -->
+      <div class="w-full md:basis-1/4 md:flex-shrink-0 min-w-0">
+        <div class="text-sm text-[var(--text-muted)]">{{ 'room.ticketId' | t }}:</div>
+        <div class="font-semibold text-lg break-words">{{ summary.ticketId || '-' }}</div>
+
+        <div class="pt-2 text-sm text-[var(--text-muted)]">{{ 'room.average' | t }}:</div>
+        <div class="font-semibold">{{ summary.average }}</div>
+
+        <div class="text-sm text-[var(--text-muted)]">{{ 'room.minMax' | t }}:</div>
+        <div class="font-semibold">{{ summary.min }} / {{ summary.max }}</div>
+
+        <div class="text-sm text-[var(--text-muted)]">{{ 'room.sum' | t }}:</div>
+        <div class="font-semibold">{{ summary.sum }}</div>
+
+        <div class="text-sm text-[var(--text-muted)]">{{ 'room.totalVotes' | t }}:</div>
+        <div class="font-semibold">{{ summary.totalVotes }}</div>
+
+        <div class="text-sm text-[var(--text-muted)]">{{ 'room.withValueCount' | t }}:</div>
+        <div class="font-semibold">{{ summary.votesWithValue }}</div>
+
+        <div class="text-sm text-[var(--text-muted)]">{{ 'room.ignoredValueZero' | t }}:</div>
+        <div class="font-semibold">{{ summary.votesIgnored }}</div>
+      </div>
+
+      <!-- Column 2: Votes per role (basis ~33%) -->
+      <div class="w-full md:basis-1/3 md:flex-shrink-0 min-w-0">
+        <div class="text-sm font-medium text-[var(--text-strong)] mb-2">{{ 'room.votesPerRole' | t }}</div>
+        @if ((summary.perRole?.length ?? 0) > 0) {
+        <ul class="space-y-2 text-sm">
+          @for (roleSummary of summary.perRole || []; track roleSummary.role) {
+          <li class="rounded px-3 py-2 bg-[var(--surface-muted)] border-[color:var(--surface-border)]">
+            <div class="flex justify-between items-center">
+              <div class="font-medium text-[var(--text-strong)]">{{ roleSummary.role }}</div>
+              <div class="text-[var(--text-muted)] text-sm">{{ roleSummary.totalVotes }} {{ 'room.votes' | t }}</div>
+            </div>
+            <div class="text-[var(--text-muted)] mt-1 text-sm">
+              {{ 'room.minMaxAverage' | t }}: <span class="font-medium text-[var(--text-strong)]">{{ roleSummary.min }}</span> / <span class="font-medium text-[var(--text-strong)]">{{ roleSummary.max }}</span> / <span class="font-medium text-[var(--text-strong)]">{{ roleSummary.average }}</span>
+            </div>
+          </li>
+          }
+        </ul>
+        } @else {
+        <p class="text-[var(--text-muted)] text-sm">{{ 'room.noVotingRounds' | t }}</p>
+        }
+      </div>
+
+      <!-- Column 3: Votes per participant (flex grows) -->
+      <div class="w-full md:flex-1 min-w-0">
+        <div class="text-sm font-medium text-[var(--text-strong)] mb-2">{{ 'room.votesPerParticipant' | t }}</div>
+        <div class="max-h-40 sm:max-h-56 overflow-y-auto pr-2 space-y-2 min-w-0">
+          <ul class="text-sm">
+            @for (p of summary.perUser; track p.userId) {
+            <li class="flex justify-between gap-4 items-center">
+              <span class="text-[var(--text-strong)] truncate">{{ p.userName }}</span>
+              <span class="ml-4">
+                <span class="font-medium">{{ p.card }}</span>
+                @if (p.contributes) {
+                <span class="text-[var(--text-muted)]"> ({{ p.numericValue }})</span>
+                } @else {
+                <span class="text-[var(--text-muted)]"> - {{ 'room.ignored' | t }}</span>
+                }
+              </span>
+            </li>
+            }
+          </ul>
+        </div>
+      </div>
     </div>
+
+    <!-- Legend placed at bottom, compact chips -->
     @if (summaryLegendItems.length > 0) {
     <div class="border-t pt-3">
-      <div class="text-sm font-medium text-neutral-700 mb-2">Card values legend</div>
-      <div class="flex flex-wrap gap-2">
+      <div class="text-sm font-medium text-[var(--text-strong)] mb-2">{{ 'room.cardValuesLegend' | t }}</div>
+      <div class="w-full flex flex-wrap gap-2">
         @for (item of summaryLegendItems; track item.card) {
-        <span class="inline-flex items-center gap-1 rounded border border-neutral-200 bg-neutral-50 px-2 py-1 text-xs sm:text-sm">
-          <span class="font-medium">{{ item.card }}</span>
+        <div class="flex items-center gap-2 rounded border border-[color:var(--surface-border)] bg-[var(--surface-muted)] px-2 py-1 text-xs max-w-full">
+          <span class="font-medium truncate">{{ item.card }}</span>
           @if (item.ignored) {
-          <span class="text-neutral-500">= ignored (0)</span>
+          <span class="text-[var(--text-muted)] truncate">= {{ 'room.ignoredValueZeroShort' | t }}</span>
           } @else {
-          <span class="text-neutral-500">= {{ item.value }}</span>
+          <span class="text-[var(--text-muted)] truncate">= {{ item.value }}</span>
           }
-        </span>
+        </div>
         }
       </div>
     </div>
     }
-    @if ((summary.perRole?.length ?? 0) > 0) {
-    <div class="border-t pt-3">
-      <div class="text-sm font-medium text-neutral-700 mb-2">Votes per role</div>
-      <ul class="space-y-1 text-sm">
-        @for (roleSummary of summary.perRole || []; track roleSummary.role) {
-        <li class="rounded border border-neutral-200 bg-neutral-50 px-3 py-2">
-          <div class="font-medium text-neutral-800">{{ roleSummary.role }}</div>
-          <div class="text-neutral-600">
-            Min / Max / Average: {{ roleSummary.min }} / {{ roleSummary.max }} / {{ roleSummary.average }}
-          </div>
-        </li>
-        }
-      </ul>
-    </div>
-    }
-    <div class="border-t pt-3">
-      <div class="text-sm font-medium text-neutral-700 mb-2">Votes per participant</div>
-      <ul class="space-y-1 text-sm">
-        @for (p of summary.perUser; track p.userId) {
-        <li class="flex justify-between gap-4">
-          <span>{{ p.userName }}:</span>
-          <span>
-            {{ p.card }}
-            @if (p.contributes) {
-            <span class="text-neutral-500">({{ p.numericValue }})</span>
-            } @else {
-            <span class="text-neutral-400">- ignored</span>
-            }
-          </span>
-        </li>
-        }
-      </ul>
-    </div>
   </div>
-  }
   <div actions class="flex gap-4">
     <button
       type="button"
@@ -193,29 +213,29 @@
       (click)="closeSummaryPopup()"
     >
       <fa-icon [icon]="ICONS.xmark" [fixedWidth]="true" />
-      Close
+      {{ 'common.close' | t }}
     </button>
   </div>
 </app-popup-alert>
 }
 
 <app-popup-alert [showAlert]="showHistoryPopup">
-  <div title>Voting history</div>
+  <div title>{{ 'room.votingHistory' | t }}</div>
   <div body class="flex flex-col gap-2 text-left min-w-0 w-full max-h-64 sm:max-h-80 overflow-y-auto">
     @if (votingHistory.length > 0) {
     @for (round of votingHistory; track round.roundNumber) {
     <button
       type="button"
-      class="w-full text-left rounded border border-neutral-200 px-4 py-3 hover:bg-neutral-100 transition-colors"
+      class="w-full text-left rounded border px-4 py-3 transition-colors bg-[var(--surface-muted)] border-[color:var(--surface-border)] text-[var(--text-strong)] hover:bg-[var(--surface)]"
       (click)="openRoundSummary(round)"
     >
-      <div class="font-medium">Round {{ round.roundNumber }}</div>
-      <div class="text-sm text-neutral-500">Average: {{ round.average }} | {{ round.totalVotes }} votes</div>
-      <div class="text-sm text-neutral-500">Ticket ID: {{ round.ticketId || '-' }}</div>
+      <div class="font-medium">{{ 'room.round' | t }} {{ round.roundNumber }}</div>
+      <div class="text-sm text-[var(--text-muted)]">{{ 'room.average' | t }}: {{ round.average }} | {{ round.totalVotes }} {{ 'room.votes' | t }}</div>
+      <div class="text-sm text-[var(--text-muted)]">{{ 'room.ticketId' | t }}: {{ round.ticketId || '-' }}</div>
     </button>
     }
     } @else {
-    <p class="text-neutral-500 py-4 text-center">No voting rounds recorded yet.</p>
+    <p class="text-neutral-500 py-4 text-center">{{ 'room.noVotingRounds' | t }}</p>
     }
   </div>
   <div actions class="flex gap-4">
@@ -226,7 +246,7 @@
       (click)="downloadHistoryCsv()"
     >
       <fa-icon [icon]="ICONS.fileCsv" [fixedWidth]="true" />
-      Download CSV
+      {{ 'room.downloadCsv' | t }}
     </button>
     }
     <button
@@ -235,7 +255,7 @@
       (click)="showHistoryPopup = false"
     >
       <fa-icon [icon]="ICONS.xmark" [fixedWidth]="true" />
-      Close
+      {{ 'common.close' | t }}
     </button>
   </div>
 </app-popup-alert>

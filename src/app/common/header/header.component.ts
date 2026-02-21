@@ -1,14 +1,16 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCircleInfo, faHome, faXmark, faCheck, faSun, faMoon, faDesktop, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faHome, faXmark, faCheck, faSun, faMoon, faDesktop, faChevronDown, faLanguage, faBars } from '@fortawesome/free-solid-svg-icons';
 import { PopupAlertComponent } from '../popup-alert/popup-alert.component';
+import { TranslatePipe } from '../i18n/translate.pipe';
+import { AppLanguage, I18nService } from '../../core/services/i18n.service';
 
 type ThemePreference = 'light' | 'dark' | 'system';
 
 @Component({
     selector: 'app-header',
-    imports: [FontAwesomeModule, PopupAlertComponent],
+    imports: [FontAwesomeModule, PopupAlertComponent, TranslatePipe],
     templateUrl: './header.component.html',
     styleUrl: './header.component.scss'
 })
@@ -22,10 +24,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
     moon: faMoon,
     system: faDesktop,
     chevronDown: faChevronDown,
+    language: faLanguage,
+    bars: faBars,
   };
   public showLeaveConfirm = false;
   public showThemeMenu = false;
+  public showLangMenu = false;
+  public showMobileMenu = false;
   public themePreference: ThemePreference = 'system';
+  public language: AppLanguage = 'en-US';
+  public readonly supportedLanguages: AppLanguage[] = ['en-US', 'pt-BR'];
   private pendingNavigateTo: string[] = [];
   private mediaQuery?: MediaQueryList;
   private readonly themeStorageKey = 'theme-preference';
@@ -35,7 +43,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, public i18n: I18nService) {}
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
@@ -44,6 +52,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.mediaQuery.addListener?.(this.mediaChangeHandler);
     }
     this.initializeTheme();
+    this.language = this.i18n.currentLanguage;
+    this.i18n.language$.subscribe((lang) => {
+      this.language = lang;
+    });
   }
 
   ngOnDestroy(): void {
@@ -80,7 +92,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public toggleThemeMenu(event: MouseEvent): void {
     event.stopPropagation();
+    this.showLangMenu = false;
     this.showThemeMenu = !this.showThemeMenu;
+  }
+
+  public toggleLangMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showThemeMenu = false;
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  public toggleMobileMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showMobileMenu = !this.showMobileMenu;
+    if (this.showMobileMenu) {
+      this.showLangMenu = false;
+      this.showThemeMenu = false;
+    }
   }
 
   public setThemePreference(preference: ThemePreference): void {
@@ -92,6 +120,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
     } catch {}
     this.applyThemeToDocument();
     this.showThemeMenu = false;
+  }
+
+  public async setLanguage(lang: AppLanguage): Promise<void> {
+    await this.i18n.setLanguage(lang);
+    this.showLangMenu = false;
+  }
+
+  public isLanguage(lang: AppLanguage): boolean {
+    return this.language === lang;
+  }
+
+  public languageLabel(lang: AppLanguage): string {
+    return lang === 'pt-BR' ? 'PT-BR' : 'EN-US';
   }
 
   public isThemePreference(preference: ThemePreference): boolean {
@@ -133,8 +174,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement | null;
-    if (!target?.closest('.theme-menu-root')) {
+    if (!target?.closest('.theme-menu-root') && !target?.closest('.lang-menu-root') && !target?.closest('.mobile-menu-root')) {
       this.showThemeMenu = false;
+      this.showLangMenu = false;
+      this.showMobileMenu = false;
     }
   }
 }

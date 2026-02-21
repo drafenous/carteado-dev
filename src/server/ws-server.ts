@@ -286,9 +286,20 @@ function handleMessage(ws: WS, ev: any) {
         ws.send(JSON.stringify({ type: 'ERROR', payload: { code: 'FORBIDDEN', message: 'Only admin can reveal votes' } }));
         return;
       }
+      const wasRevealed = room.voting.isRevealed;
       room.voting.isRevealed = true;
+      if (!wasRevealed) {
+        const summary = computeVotingSummary(room);
+        if (summary) {
+          room.settings = room.settings || {};
+          const history = room.settings.votingHistory || [];
+          summary.roundNumber = history.length + 1;
+          room.settings.votingHistory = [...history, summary];
+        }
+      }
       room.updatedAt = Date.now();
       broadcastToRoom(roomId, { type: 'VOTES_REVEALED', payload: { votes: room.voting.votes } });
+      broadcastToRoom(roomId, { type: 'ROOM_STATE_UPDATED', payload: { room } });
       break;
     }
     case 'RESET_VOTING': {
@@ -298,15 +309,6 @@ function handleMessage(ws: WS, ev: any) {
       if (!isAdmin(room, userId)) {
         ws.send(JSON.stringify({ type: 'ERROR', payload: { code: 'FORBIDDEN', message: 'Only admin can reset voting' } }));
         return;
-      }
-      if (room.voting.isRevealed) {
-        const summary = computeVotingSummary(room);
-        if (summary) {
-          room.settings = room.settings || {};
-          const history = room.settings.votingHistory || [];
-          summary.roundNumber = history.length + 1;
-          room.settings.votingHistory = [...history, summary];
-        }
       }
       room.settings = room.settings || {};
       room.settings.ticketId = '';

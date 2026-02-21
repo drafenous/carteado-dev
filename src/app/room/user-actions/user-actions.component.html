@@ -1,21 +1,21 @@
 <div class="flex flex-wrap gap-2 sm:gap-4 justify-between sm:justify-end">
   @if (isSpectator) {
-  <app-tooltip text="Become a voter">
+  <app-tooltip [text]="'userActions.becomeVoter' | t">
     <button
       type="button"
       class="btn-minimal h-10 w-10 inline-flex items-center justify-center text-sm sm:text-base"
-      aria-label="Become a voter"
+      [attr.aria-label]="'userActions.becomeVoter' | t"
       (click)="becomeVoter()"
     >
       <fa-icon [icon]="ICONS.userCircle" [fixedWidth]="true" />
     </button>
   </app-tooltip>
   } @else {
-  <app-tooltip text="Become a spectator">
+  <app-tooltip [text]="'userActions.becomeSpectator' | t">
     <button
       type="button"
       class="btn-minimal h-10 w-10 inline-flex items-center justify-center text-sm sm:text-base"
-      aria-label="Become a spectator"
+      [attr.aria-label]="'userActions.becomeSpectator' | t"
       (click)="becomeSpectator()"
     >
       <fa-icon [icon]="ICONS.mugHot" [fixedWidth]="true" />
@@ -27,11 +27,11 @@
       {{ notificationMessage }}
     </div>
   }
-  <app-tooltip text="Leave room">
+  <app-tooltip [text]="'userActions.leaveRoom' | t">
     <button
       type="button"
       class="h-10 w-10 inline-flex items-center justify-center rounded-md text-sm sm:text-base bg-red-600 text-white hover:bg-red-700 transition-all"
-      aria-label="Leave room"
+      [attr.aria-label]="'userActions.leaveRoom' | t"
       (click)="leaveRoom()"
     >
       <fa-icon [icon]="ICONS.rightToBracket" [fixedWidth]="true" />

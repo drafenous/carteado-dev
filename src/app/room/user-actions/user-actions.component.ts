@@ -6,10 +6,12 @@ import { faMugHot, faRightToBracket, faUserCircle } from '@fortawesome/free-soli
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TooltipComponent } from '../../common/tooltip/tooltip.component';
+import { TranslatePipe } from '../../common/i18n/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 
 @Component({
     selector: 'app-user-actions',
-    imports: [FontAwesomeModule, TooltipComponent],
+    imports: [FontAwesomeModule, TooltipComponent, TranslatePipe],
     templateUrl: './user-actions.component.html',
     styleUrl: './user-actions.component.scss'
 })
@@ -28,7 +30,8 @@ export class UserActionsComponent {
   constructor(
     private roomStore: RoomStoreService,
     private localStorage: LocalStorageService,
-    private router: Router
+    private router: Router,
+    private i18n: I18nService
   ) {}
 
   public becomeSpectator(): void {
@@ -71,7 +74,7 @@ export class UserActionsComponent {
           this.isAdmin = false;
           this.isSpectator = false;
           // emit notification if role changed from admin to non-admin
-          if (this.prevIsAdmin === true) this.showNotification('You are no longer admin');
+          if (this.prevIsAdmin === true) this.showNotification(this.i18n.t('userActions.noLongerAdmin'));
           this.prevIsAdmin = this.isAdmin;
           return;
         }
@@ -82,7 +85,7 @@ export class UserActionsComponent {
         if (this.prevIsAdmin === null) {
           // initial assignment, don't notify
         } else if (this.prevIsAdmin !== this.isAdmin) {
-          this.showNotification(this.isAdmin ? 'You are now admin' : 'You are no longer admin');
+          this.showNotification(this.isAdmin ? this.i18n.t('userActions.nowAdmin') : this.i18n.t('userActions.noLongerAdmin'));
         }
         this.prevIsAdmin = this.isAdmin;
       } catch (e) {

@@ -9,6 +9,7 @@ import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faMugHot, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { TooltipComponent } from '../common/tooltip/tooltip.component';
+import { TranslatePipe } from '../common/i18n/translate.pipe';
 
 @Component({
     selector: 'app-home',
@@ -19,6 +20,7 @@ import { TooltipComponent } from '../common/tooltip/tooltip.component';
         RouterModule,
         FontAwesomeModule,
         TooltipComponent,
+        TranslatePipe,
     ],
     templateUrl: './home.component.html',
     styleUrl: './home.component.scss'
@@ -28,7 +30,7 @@ export class HomeComponent implements OnInit {
   roomIdControl = new FormControl<string>('');
   teamRoleControl = new FormControl<string>('');
   teamRoleOtherControl = new FormControl<string>('');
-  invalidRoomMessage = '';
+  invalidRoomMessage = false;
 
   public ICONS = {
     createRoom: faMugHot,
@@ -56,7 +58,7 @@ export class HomeComponent implements OnInit {
     this.route.queryParamMap.pipe(take(1)).subscribe((params) => {
       const preset = params.get('roomId');
       if (preset) this.roomIdControl.setValue(preset);
-      this.invalidRoomMessage = params.get('invalidRoom') === '1' ? 'Invalid room. Check the code and try again.' : '';
+      this.invalidRoomMessage = params.get('invalidRoom') === '1';
     });
 
     this.userNameControl.valueChanges
@@ -71,7 +73,7 @@ export class HomeComponent implements OnInit {
       this.appService.userTeamRoleCustom = v || '';
     });
     this.roomIdControl.valueChanges.pipe(debounceTime(100)).subscribe(() => {
-      this.invalidRoomMessage = '';
+      this.invalidRoomMessage = false;
     });
   }
 

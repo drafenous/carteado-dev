@@ -9,14 +9,16 @@
     role="dialog"
     aria-modal="true"
     tabindex="-1"
-    class="surface-panel z-[90] w-full max-w-[calc(100vw-1.5rem)] sm:max-w-md p-4 sm:p-6 md:p-7 rounded-2xl md:rounded-3xl overflow-hidden"
+    [attr.class]="
+      'surface-panel z-[90] w-full max-w-[calc(100vw-1.5rem)] p-4 sm:p-6 md:p-7 rounded-2xl md:rounded-3xl overflow-hidden' +
+      (wide() ? ' sm:max-w-[78vw] md:max-w-[64rem] lg:max-w-[72rem]' : ' sm:max-w-md')"
   >
     <div class="mb-3 sm:mb-4">
       <h1 class="text-center text-xl sm:text-2xl md:text-3xl font-semibold text-neutral-900">
         <ng-content select="[title]"></ng-content>
       </h1>
     </div>
-    <div class="mb-3 sm:mb-4 overflow-y-auto max-h-[60vh] sm:max-h-[70vh]">
+    <div class="mb-3 sm:mb-4 overflow-y-auto overflow-x-hidden max-h-[60vh] sm:max-h-[70vh]">
       <ng-content select="[body]"></ng-content>
     </div>
     <div class="">

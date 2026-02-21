@@ -279,9 +279,20 @@ export default class CarteadoPartyServer implements Party.Server {
           sender.send(JSON.stringify({ type: 'ERROR', payload: { code: 'FORBIDDEN', message: 'Only admin can reveal votes' } }));
           return;
         }
+        const wasRevealed = this.state.voting.isRevealed;
         this.state.voting.isRevealed = true;
+        if (!wasRevealed) {
+          const summary = this.computeVotingSummary(this.state);
+          if (summary) {
+            this.state.settings = this.state.settings || {};
+            const history = this.state.settings.votingHistory || [];
+            summary.roundNumber = history.length + 1;
+            this.state.settings.votingHistory = [...history, summary];
+          }
+        }
         this.state.updatedAt = Date.now();
         this.broadcast({ type: 'VOTES_REVEALED', payload: { votes: this.state.voting.votes } });
+        this.broadcast({ type: 'ROOM_STATE_UPDATED', payload: { room: this.state } });
         break;
       }
 
@@ -291,15 +302,6 @@ export default class CarteadoPartyServer implements Party.Server {
         if (!this.isAdmin(this.state, userId)) {
           sender.send(JSON.stringify({ type: 'ERROR', payload: { code: 'FORBIDDEN', message: 'Only admin can reset voting' } }));
           return;
-        }
-        if (this.state.voting.isRevealed) {
-          const summary = this.computeVotingSummary(this.state);
-          if (summary) {
-            this.state.settings = this.state.settings || {};
-            const history = this.state.settings.votingHistory || [];
-            summary.roundNumber = history.length + 1;
-            this.state.settings.votingHistory = [...history, summary];
-          }
         }
         this.state.settings = this.state.settings || {};
         this.state.settings.ticketId = '';

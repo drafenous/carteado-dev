@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angula
 import { Subscription } from 'rxjs';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChartSimple, faClockRotateLeft, faFileCsv, faCopy, faLink, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faChartSimple, faClockRotateLeft, faFileCsv, faCopy, faLink, faXmark, faRotateRight, faEye } from '@fortawesome/free-solid-svg-icons';
 import { ContentBoxComponent } from '../common/content-box/content-box.component';
 import { PopupAlertComponent } from '../common/popup-alert/popup-alert.component';
 import { TooltipComponent } from '../common/tooltip/tooltip.component';
@@ -17,6 +17,8 @@ import { UserBoxComponent } from './user-box/user-box.component';
 import { RoomStoreService } from '../core/services/room-store.service';
 import { RoomState, VotingRoundSummary } from '../core/models/room-state';
 import { ActivatedRoute } from '@angular/router';
+import { TranslatePipe } from '../common/i18n/translate.pipe';
+import { I18nService } from '../core/services/i18n.service';
 
 @Component({
     selector: 'app-room',
@@ -28,7 +30,8 @@ import { ActivatedRoute } from '@angular/router';
     UserBoxComponent,
     UserActionsComponent,
     PopupAlertComponent
-    , TooltipComponent
+    , TooltipComponent,
+    TranslatePipe
 ],
     templateUrl: './room.component.html',
     styleUrl: './room.component.scss'
@@ -43,7 +46,7 @@ export class RoomComponent implements OnDestroy {
   public showSummaryPopup = false;
   public showHistoryPopup = false;
   public selectedRoundForSummary: VotingRoundSummary | null = null;
-  public ICONS = { chartSimple: faChartSimple, clockRotateLeft: faClockRotateLeft, fileCsv: faFileCsv, copy: faCopy, link: faLink, xmark: faXmark };
+  public ICONS = { chartSimple: faChartSimple, clockRotateLeft: faClockRotateLeft, fileCsv: faFileCsv, copy: faCopy, link: faLink, xmark: faXmark, rotateRight: faRotateRight, eye: faEye };
 
   constructor(
     private appService: AppService,
@@ -51,6 +54,7 @@ export class RoomComponent implements OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private localStorage: LocalStorageService,
+    private i18n: I18nService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone
   ) {
@@ -188,22 +192,12 @@ export class RoomComponent implements OnDestroy {
 
   private getTeamRoleLabel(user: User): string {
     const role = user.teamRole;
-    if (!role) return 'Unspecified';
+    if (!role) return this.i18n.t('roles.unspecified');
     if (role === 'other') {
       const custom = String(user.teamRoleCustom ?? '').trim();
-      return custom || 'Other';
+      return custom || this.i18n.t('roles.other');
     }
-    const labels: Record<string, string> = {
-      frontend: 'Frontend',
-      backend: 'Backend',
-      fullstack: 'Fullstack',
-      qa: 'QA',
-      devops: 'DevOps',
-      techlead: 'Tech Lead',
-      engineer: 'Engineer',
-      staff: 'Staff',
-    };
-    return labels[role] || 'Unspecified';
+    return this.i18n.t(`roles.${role}`);
   }
 
   public get votingHistory(): VotingRoundSummary[] {
@@ -376,10 +370,29 @@ export class RoomComponent implements OnDestroy {
       const s = String(v);
       return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const header = 'Round,DateTime,TicketId,Average,Min,Max,Sum,TotalVotes,VotesWithValue,Ignored,Participant,ParticipantRole,RoleAverage,RoleMin,RoleMax,Card,NumericValue,Contributes';
+    const header = [
+      this.i18n.t('csv.round'),
+      this.i18n.t('csv.dateTime'),
+      this.i18n.t('csv.ticketId'),
+      this.i18n.t('csv.average'),
+      this.i18n.t('csv.min'),
+      this.i18n.t('csv.max'),
+      this.i18n.t('csv.sum'),
+      this.i18n.t('csv.totalVotes'),
+      this.i18n.t('csv.votesWithValue'),
+      this.i18n.t('csv.ignored'),
+      this.i18n.t('csv.participant'),
+      this.i18n.t('csv.participantRole'),
+      this.i18n.t('csv.roleAverage'),
+      this.i18n.t('csv.roleMin'),
+      this.i18n.t('csv.roleMax'),
+      this.i18n.t('csv.card'),
+      this.i18n.t('csv.numericValue'),
+      this.i18n.t('csv.contributes'),
+    ].map(escapeCsv).join(',');
     const rows: string[] = [header];
     for (const round of history) {
-      const dateStr = new Date(round.timestamp).toLocaleString('en-US');
+      const dateStr = new Date(round.timestamp).toLocaleString(this.i18n.currentLanguage);
       const roleMap = new Map((round.perRole ?? []).map((r) => [r.role, r]));
       const summary = [
         round.roundNumber,
@@ -406,11 +419,11 @@ export class RoomComponent implements OnDestroy {
             roleStats?.max ?? '',
             p.card,
             p.numericValue,
-            p.contributes ? 'Yes' : 'No',
+            p.contributes ? this.i18n.t('common.yes') : this.i18n.t('common.no'),
           ].map(escapeCsv).join(','));
         }
       } else {
-        rows.push([...summary, '', '', '', '', '', '', '', 'N/A'].map(escapeCsv).join(','));
+        rows.push([...summary, '', '', '', '', '', '', '', this.i18n.t('common.notAvailable')].map(escapeCsv).join(','));
       }
     }
     const csv = '\uFEFF' + rows.join('\n');

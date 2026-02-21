@@ -7,10 +7,12 @@ import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs'
 import { CardModel } from '../../core/models/card-model';
 import { PopupAlertComponent } from '../../common/popup-alert/popup-alert.component';
 import { TooltipComponent } from '../../common/tooltip/tooltip.component';
+import { TranslatePipe } from '../../common/i18n/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 
 @Component({
   selector: 'app-card-selector',
-  imports: [CommonModule, FormsModule, FontAwesomeModule, PopupAlertComponent, TooltipComponent],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, PopupAlertComponent, TooltipComponent, TranslatePipe],
   templateUrl: './card-selector.component.html',
   styleUrl: './card-selector.component.scss',
 })
@@ -111,7 +113,7 @@ export class CardSelectorComponent implements OnDestroy {
   private ticketIdSub: Subscription;
   private lastSentTicketId = '';
 
-  constructor() {
+  constructor(private i18n: I18nService) {
     this.ticketIdSub = this.ticketIdInput$
       .pipe(
         debounceTime(350),
@@ -193,7 +195,7 @@ export class CardSelectorComponent implements OnDestroy {
       this.showReplaceConfirmPopup = false;
       this.showImportResultPopup = true;
       this.importResultSuccess = true;
-      this.importResultMessage = 'Deck replaced successfully!';
+      this.importResultMessage = this.i18n.t('cardSelector.deckReplacedSuccess');
     }
   }
 
@@ -229,7 +231,7 @@ export class CardSelectorComponent implements OnDestroy {
     const cardValues = model?.cardValues;
     if (cardValues && cardValues[card] != null) {
       const value = cardValues[card];
-      return value === 0 ? `${card} = ignored (0)` : `${card} = ${value}`;
+      return value === 0 ? `${card} = ${this.i18n.t('cardSelector.ignoredZero')}` : `${card} = ${value}`;
     }
     const n = parseInt(String(card), 10);
     if (!isNaN(n)) {
@@ -300,7 +302,11 @@ export class CardSelectorComponent implements OnDestroy {
         if (seen.has(c)) dups.add(c);
         else seen.add(c);
       }
-      return { cards: uniqueCards, cardValues, error: `Duplicate card(s): ${[...dups].join(', ')}` };
+      return {
+        cards: uniqueCards,
+        cardValues,
+        error: this.i18n.t('cardSelector.errorDuplicateCards', { items: [...dups].join(', ') }),
+      };
     }
 
     // Validate: non-zero values cannot repeat
@@ -314,7 +320,11 @@ export class CardSelectorComponent implements OnDestroy {
     }
     for (const [val, list] of valueCounts) {
       if (list.length > 1) {
-        return { cards: uniqueCards, cardValues, error: `Duplicate value ${val}: ${list.join(', ')}` };
+        return {
+          cards: uniqueCards,
+          cardValues,
+          error: this.i18n.t('cardSelector.errorDuplicateValue', { value: val, items: list.join(', ') }),
+        };
       }
     }
 
@@ -337,7 +347,7 @@ export class CardSelectorComponent implements OnDestroy {
   public handleCreateCustomModel(): void {
     const sanitizedName = this.newModelName.trim();
     if (!sanitizedName) {
-      this.createError = 'Please provide a name for the deck.';
+      this.createError = this.i18n.t('cardSelector.errorDeckNameRequired');
       return;
     }
 
@@ -348,7 +358,7 @@ export class CardSelectorComponent implements OnDestroy {
     }
     const { cards, cardValues } = result;
     if (cards.length < 2) {
-      this.createError = 'Add at least 2 cards. Example: 1, 2, 3, 👍, 👌 = 10';
+      this.createError = this.i18n.t('cardSelector.errorAtLeastTwoCards');
       return;
     }
 
@@ -375,7 +385,7 @@ export class CardSelectorComponent implements OnDestroy {
     this.importError = '';
     const selected = this.selectedModel;
     if (selected.isPreset) {
-      this.importError = 'Select a custom deck to export.';
+      this.importError = this.i18n.t('cardSelector.errorSelectCustomDeck');
       return;
     }
 
@@ -409,7 +419,7 @@ export class CardSelectorComponent implements OnDestroy {
     reader.onload = () => {
       try {
         const raw = reader.result;
-        if (typeof raw !== 'string') throw new Error('Invalid file.');
+        if (typeof raw !== 'string') throw new Error(this.i18n.t('cardSelector.errorInvalidFile'));
 
         const parsed = JSON.parse(raw) as Partial<CardModel>;
         const sanitizedName = parsed.name?.trim();
@@ -420,13 +430,13 @@ export class CardSelectorComponent implements OnDestroy {
             .filter((card) => !!card) ?? [];
         const cardValues = parsed.cardValues && typeof parsed.cardValues === 'object' ? parsed.cardValues : undefined;
 
-        if (!sanitizedName) throw new Error('Field "name" is required.');
-        if (sanitizedCards.length < 2) throw new Error('Field "cards" must contain at least 2 items.');
+        if (!sanitizedName) throw new Error(this.i18n.t('cardSelector.errorNameFieldRequired'));
+        if (sanitizedCards.length < 2) throw new Error(this.i18n.t('cardSelector.errorCardsFieldMinimum'));
 
         if (this.isDefaultName(sanitizedName)) {
           this.showImportResultPopup = true;
           this.importResultSuccess = false;
-          this.importResultMessage = 'Importing a deck with a default preset name (Fibonacci, T-Shirt, etc.) is not allowed.';
+          this.importResultMessage = this.i18n.t('cardSelector.errorDefaultPresetName');
           target.value = '';
           return;
         }
@@ -451,12 +461,12 @@ export class CardSelectorComponent implements OnDestroy {
         this.applyImportedModel(importedModel);
         this.showImportResultPopup = true;
         this.importResultSuccess = true;
-        this.importResultMessage = 'Deck imported successfully!';
+        this.importResultMessage = this.i18n.t('cardSelector.deckImportedSuccess');
       } catch (error) {
         this.showImportResultPopup = true;
         this.importResultSuccess = false;
         this.importResultMessage =
-          error instanceof Error ? error.message : 'Failed to import deck.';
+          error instanceof Error ? error.message : this.i18n.t('cardSelector.errorImportFailed');
       } finally {
         target.value = '';
       }
@@ -465,7 +475,7 @@ export class CardSelectorComponent implements OnDestroy {
     reader.onerror = () => {
       this.showImportResultPopup = true;
       this.importResultSuccess = false;
-      this.importResultMessage = 'Failed to read the selected file.';
+      this.importResultMessage = this.i18n.t('cardSelector.errorReadSelectedFile');
       target.value = '';
     };
 

@@ -6,7 +6,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label for="cardModel" class="block text-sm font-medium text-neutral-700 mb-1">
-              Card deck
+              {{ 'cardSelector.cardDeck' | t }}
             </label>
             <select
               id="cardModel"
@@ -22,13 +22,13 @@
 
           <div>
             <label for="ticketId" class="block text-sm font-medium text-neutral-700 mb-1">
-              Ticket ID (optional)
+              {{ 'cardSelector.ticketIdOptional' | t }}
             </label>
             <input
               id="ticketId"
               type="text"
               class="w-full h-11 rounded border border-neutral-300 px-3"
-              placeholder="JIRA-123"
+              [placeholder]="'cardSelector.ticketPlaceholder' | t"
               [ngModel]="ticketIdDraft"
               (ngModelChange)="handleTicketIdInput($event)"
               (blur)="commitTicketId()"
@@ -39,7 +39,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label for="cardModelReadonly" class="block text-sm font-medium text-neutral-700 mb-1">
-              Card deck
+              {{ 'cardSelector.cardDeck' | t }}
             </label>
             <div id="cardModelReadonly" class="h-11 rounded border border-neutral-200 bg-neutral-50 px-3 text-neutral-700 flex items-center">
               {{ effectiveModel.name }}
@@ -48,7 +48,7 @@
 
           <div>
             <label for="ticketIdReadonly" class="block text-sm font-medium text-neutral-700 mb-1">
-              Ticket ID
+              {{ 'cardSelector.ticketId' | t }}
             </label>
             <div id="ticketIdReadonly" class="h-11 rounded border border-neutral-200 bg-neutral-50 px-3 text-neutral-700 flex items-center">
               {{ ticketId() || '-' }}
@@ -60,7 +60,7 @@
 
       @if (isAdmin()) {
       <div class="flex flex-wrap gap-2 md:pt-6">
-        <app-tooltip text="Import deck JSON">
+        <app-tooltip [text]="'cardSelector.importDeckJson' | t">
           <label class="btn-minimal inline-flex items-center justify-center h-9 w-9 text-neutral-800">
             <input
               type="file"
@@ -71,7 +71,7 @@
             <fa-icon [icon]="ICONS.fileImport" [fixedWidth]="true" />
           </label>
         </app-tooltip>
-        <app-tooltip text="Export current deck">
+        <app-tooltip [text]="'cardSelector.exportCurrentDeck' | t">
           <button
             type="button"
             class="btn-minimal inline-flex items-center justify-center h-9 w-9 disabled:opacity-50"
@@ -121,30 +121,30 @@
         (click)="showCreateModel = !showCreateModel"
       >
         <fa-icon [icon]="showCreateModel ? ICONS.chevronDown : ICONS.chevronRight" [fixedWidth]="true" class="text-neutral-500" />
-        Create custom deck
+        {{ 'cardSelector.createCustomDeck' | t }}
       </button>
       @if (showCreateModel) {
       <p class="text-sm text-neutral-600 mt-2">
-        Emojis without a value (= 0) are ignored in the summary. Use "emoji = N" to set a value.
+        {{ 'cardSelector.emojiRuleHint' | t }}
       </p>
 
       <div class="mt-3 flex flex-col gap-3">
         <div>
-          <label for="deckName" class="block text-sm font-medium text-neutral-700 mb-1">Deck Name</label>
+          <label for="deckName" class="block text-sm font-medium text-neutral-700 mb-1">{{ 'cardSelector.deckName' | t }}</label>
           <input
             id="deckName"
             type="text"
             class="w-full rounded border border-neutral-300 px-3 py-2"
-            placeholder="Ex: Squad XP"
+            [placeholder]="'cardSelector.deckNamePlaceholder' | t"
             [(ngModel)]="newModelName"
           />
         </div>
         <div>
-          <label for="cardValues" class="block text-sm font-medium text-neutral-700 mb-1">Card values</label>
+          <label for="cardValues" class="block text-sm font-medium text-neutral-700 mb-1">{{ 'cardSelector.cardValues' | t }}</label>
           <textarea
             id="cardValues"
             class="w-full rounded border border-neutral-300 px-3 py-2 min-h-20 sm:min-h-24 text-sm sm:text-base"
-            placeholder="1, 2, 3, 4, 5, 👍, 👌 = 10, ✌️ = 7"
+            [placeholder]="'cardSelector.cardValuesPlaceholder' | t"
             [(ngModel)]="newModelCardsInput"
             rows="3"
           ></textarea>
@@ -172,7 +172,7 @@
           class="btn-primary px-3 py-2 sm:px-4 text-sm w-fit"
           (click)="handleCreateCustomModel()"
         >
-          Save deck
+          {{ 'cardSelector.saveDeck' | t }}
         </button>
       </div>
 
@@ -186,7 +186,7 @@
 </div>
 
 <app-popup-alert [showAlert]="showImportResultPopup">
-    <div title>{{ importResultSuccess ? 'Success' : 'Error' }}</div>
+    <div title>{{ importResultSuccess ? ('common.success' | t) : ('common.error' | t) }}</div>
   <div body class="text-center">
     <p class="font-semibold" [class.text-emerald-800]="importResultSuccess" [class.text-red-700]="!importResultSuccess">
       {{ importResultMessage }}
@@ -199,16 +199,16 @@
       (click)="closeImportResultPopup()"
     >
       <fa-icon [icon]="ICONS.xmark" [fixedWidth]="true" />
-      Close
+      {{ 'common.close' | t }}
     </button>
   </div>
 </app-popup-alert>
 
 <app-popup-alert [showAlert]="showReplaceConfirmPopup">
-  <div title>Duplicate deck</div>
+  <div title>{{ 'cardSelector.duplicateDeck' | t }}</div>
   <div body class="text-center">
     <p class="text-neutral-700">
-      A deck named "{{ pendingImportModelName }}" already exists. Do you want to replace it?
+      {{ 'cardSelector.duplicateDeckMessage' | t:{ deckName: pendingImportModelName } }}
     </p>
   </div>
   <div actions class="flex gap-4">
@@ -218,7 +218,7 @@
       (click)="cancelReplaceImport()"
     >
       <fa-icon [icon]="ICONS.xmark" [fixedWidth]="true" />
-      Cancel
+      {{ 'common.cancel' | t }}
     </button>
     <button
       type="button"
@@ -226,7 +226,7 @@
       (click)="confirmReplaceImport()"
     >
       <fa-icon [icon]="ICONS.check" [fixedWidth]="true" />
-      Replace
+      {{ 'cardSelector.replace' | t }}
     </button>
   </div>
 </app-popup-alert>

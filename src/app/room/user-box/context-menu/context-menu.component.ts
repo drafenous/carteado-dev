@@ -22,10 +22,11 @@ import { PopupAlertComponent } from '../../../common/popup-alert/popup-alert.com
 import { User } from '../../../core/models/user';
 import { RoomStoreService } from '../../../core/services/room-store.service';
 import { LocalStorageService } from '../../../core/services/local-storage.service';
+import { TranslatePipe } from '../../../common/i18n/translate.pipe';
 
 @Component({
     selector: 'app-context-menu',
-    imports: [CommonModule, FontAwesomeModule, PopupAlertComponent],
+    imports: [CommonModule, FontAwesomeModule, PopupAlertComponent, TranslatePipe],
     templateUrl: './context-menu.component.html',
     styleUrl: './context-menu.component.scss'
 })

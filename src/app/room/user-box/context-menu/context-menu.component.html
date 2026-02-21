@@ -11,7 +11,7 @@
         class="w-full px-4 py-2 text-left inline-flex items-center gap-2 text-[var(--text-strong)] hover:bg-[var(--surface-muted)]"
         (click)="handleToggleVotter($event, false)"
       >
-        <fa-icon [icon]="ICONS.mugHot" [fixedWidth]="true" /> Turn as spectator
+        <fa-icon [icon]="ICONS.mugHot" [fixedWidth]="true" /> {{ 'contextMenu.turnSpectator' | t }}
       </button>
       } @else {
       <button
@@ -19,7 +19,7 @@
         class="w-full px-4 py-2 text-left inline-flex items-center gap-2 text-[var(--text-strong)] hover:bg-[var(--surface-muted)]"
         (click)="handleToggleVotter($event, true)"
       >
-        <fa-icon [icon]="ICONS.rightToBracket" [fixedWidth]="true" /> Turn as voter
+        <fa-icon [icon]="ICONS.rightToBracket" [fixedWidth]="true" /> {{ 'contextMenu.turnVoter' | t }}
       </button>
       }
     </li>
@@ -31,7 +31,7 @@
         (click)="handleTurnAdmin($event, user())"
       >
         <fa-icon [icon]="ICONS.handshake" [fixedWidth]="true" />
-        Turn as admin
+        {{ 'contextMenu.turnAdmin' | t }}
       </button>
     </li>
     } @if(user().role !== 'admin' && user().role !== 'admin_spectator'){
@@ -42,7 +42,7 @@
         (click)="handleKick($event, user().id)"
       >
         <fa-icon [icon]="ICONS.rightToBracket" [fixedWidth]="true" />
-        Kick from the room
+        {{ 'contextMenu.kickFromRoom' | t }}
       </button>
     </li>
     }
@@ -51,17 +51,16 @@
 }
 
 <app-popup-alert #PopupAlert [showAlert]="!!(showAdminAlert$ | async)">
-  <div title>Hey, look out!</div>
+  <div title>{{ 'contextMenu.adminAlertTitle' | t }}</div>
   <div body class="flex flex-col text-center">
     <div class="text-red-600 my-4">
       <fa-icon [icon]="ICONS.exclamation" [fixedWidth]="true" [size]="'3x'" />
     </div>
     <div class="mb-4 text-lg">
-      Only one person can be administrator of this room<br />
-      If you turn {{ user().name }} as admin, you will immediately lose your
-      administrator rights
+      {{ 'contextMenu.adminAlertBody1' | t }}<br />
+      {{ 'contextMenu.adminAlertBody2' | t:{ userName: user().name } }}
     </div>
-    <div class="mb-4 text-xl">Are you sure about this?</div>
+    <div class="mb-4 text-xl">{{ 'contextMenu.adminAlertQuestion' | t }}</div>
   </div>
   <div actions class="flex gap-4">
     <button
@@ -75,7 +74,7 @@
         [size]="'1x'"
         class=""
       />
-      No, cancel!
+      {{ 'contextMenu.noCancel' | t }}
     </button>
     <button
       type="button"
@@ -88,7 +87,7 @@
         [size]="'1x'"
         class=""
       />
-      Yes, I'm sure.
+      {{ 'contextMenu.yesSure' | t }}
     </button>
   </div>
 </app-popup-alert>

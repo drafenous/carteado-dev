@@ -63,10 +63,12 @@ function getTeamRoleLabel(user: User): string {
   const labels: Record<string, string> = {
     frontend: 'Frontend',
     backend: 'Backend',
-    staff: 'Staff',
-    engineer: 'Engineer',
-    qa: 'QA',
     fullstack: 'Fullstack',
+    qa: 'QA',
+    devops: 'DevOps',
+    techlead: 'Tech Lead',
+    engineer: 'Engineer',
+    staff: 'Staff',
   };
   return labels[role] || 'Unspecified';
 }

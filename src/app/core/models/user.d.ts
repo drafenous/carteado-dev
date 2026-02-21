@@ -1,4 +1,4 @@
-export type TeamRole = 'frontend' | 'backend' | 'staff' | 'engineer' | 'qa' | 'fullstack' | 'other';
+export type TeamRole = 'frontend' | 'backend' | 'staff' | 'engineer' | 'qa' | 'fullstack' | 'devops' | 'techlead' | 'other';
 
 export interface User {
   id: string;

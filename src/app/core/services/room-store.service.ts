@@ -28,10 +28,14 @@ export class RoomStoreService {
     //    Set window.__WS_URL__ = "wss://realtime.example.com" in the hosting HTML if needed.
     const runtimeOverride = (window as any).__WS_URL__ as string | undefined;
     if (runtimeOverride && runtimeOverride.length > 0) {
-      const trimmed = runtimeOverride.trim();
-      const normalized = trimmed
+      const trimmed = runtimeOverride.trim().replace(/\/+$/, '');
+      let normalized = trimmed
         .replace(/^https:\/\//, 'wss://')
         .replace(/^http:\/\//, 'ws://');
+      // If only PartyKit host is provided, default to the main party route pattern.
+      if (!normalized.includes('/parties/')) {
+        normalized = `${normalized}/parties/main/:roomId`;
+      }
       return normalized;
     }
 

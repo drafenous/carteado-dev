@@ -91,7 +91,7 @@
   },
   "about": {
     "title": "Sobre o Carteado",
-    "intro": "Carteado é uma ferramenta gratuita e open-source de Planning Poker para estimar trabalho com times de desenvolvimento. Crie salas, convide sua equipe e vote em tempo real.",
+    "intro": "Carteado é uma ferramenta gratuita de Planning Poker para estimar trabalho com times de desenvolvimento. Crie salas, convide sua equipe e vote em tempo real.",
     "howItWorks": "Como funciona",
     "howStep1": "Crie uma sala ou entre com um código existente",
     "howStep2": "Compartilhe o link ou o código da sala com sua equipe",

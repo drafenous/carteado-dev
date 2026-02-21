@@ -91,7 +91,7 @@
   },
   "about": {
     "title": "About Carteado",
-    "intro": "Carteado is a free, open-source Planning Poker tool for estimating work with development teams. Create rooms, invite your team, and vote in real time.",
+    "intro": "Carteado is a free Planning Poker tool for estimating work with development teams. Create rooms, invite your team, and vote in real time.",
     "howItWorks": "How it works",
     "howStep1": "Create a room or join with an existing code",
     "howStep2": "Share the room link or code with your team",

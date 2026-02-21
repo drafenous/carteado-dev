@@ -17,6 +17,7 @@ export class RoomStoreService {
   private statusMonitorSub: Subscription | null = null;
   private currentRoomId: string | null = null;
   private currentUserId: string | null = null;
+  private pendingJoin: { roomId: string; user: Partial<User>; allowCreate: boolean } | null = null;
   private wsUrl = '';
 
   constructor(private realtime: RealtimeService, private router: Router) {}
@@ -43,7 +44,7 @@ export class RoomStoreService {
     // 2) If running on localhost, prefer local POC server
     const host = window.location.hostname;
     if (host === 'localhost' || host === '127.0.0.1') {
-      const url = `ws://${host}:4000/api/ws`;
+      const url = `ws://${host}:1999/parties/main/:roomId`;
       // Helpful debug log to see which URL the client will try to connect to
       // (printed in browser console)
       // eslint-disable-next-line no-console
@@ -53,7 +54,7 @@ export class RoomStoreService {
 
     // 3) Default to a ws URL derived from the current origin (production)
     const origin = window.location.origin.replace(/^http/, 'ws');
-    const url = `${origin}/api/ws`;
+    const url = `${origin}/parties/main/:roomId`;
     // eslint-disable-next-line no-console
     console.debug('[RoomStore] resolved WS URL:', url);
     return url;
@@ -72,30 +73,42 @@ export class RoomStoreService {
   }
 
   connect(roomId: string, user: Partial<User>, allowCreate = false) {
+    // Defensive: avoid duplicated subscriptions if connect is invoked more than once.
+    if (this.sub) {
+      this.sub.unsubscribe();
+      this.sub = null;
+    }
+    if (this.statusSub) {
+      this.statusSub.unsubscribe();
+      this.statusSub = null;
+    }
+    if (this.statusMonitorSub) {
+      this.statusMonitorSub.unsubscribe();
+      this.statusMonitorSub = null;
+    }
+
     const baseUrl = this.wsUrl || this.resolveWsUrl();
     const url = baseUrl
       .replace('{roomId}', encodeURIComponent(roomId))
       .replace(':roomId', encodeURIComponent(roomId));
     if (url) {
+      this.pendingJoin = { roomId, user, allowCreate };
       this.realtime.connect(url);
       // subscribe to messages
       this.sub = this.realtime.messages.subscribe((ev) => this.handleServerEvent(ev));
 
-      // wait for the WS to be connected before sending JOIN to avoid "WebSocket not connected" warnings
+      // On each successful (re)connect, re-send JOIN to re-associate this socket with the room.
       this.statusSub = this.realtime.status.subscribe((s) => {
         if (s === 'connected') {
-          try {
-            const join: ClientEvent = { type: 'JOIN_ROOM', payload: { roomId, user, allowCreate } } as any;
-            // helpful debug
+          const pending = this.pendingJoin;
+          if (pending) {
+            const join: ClientEvent = {
+              type: 'JOIN_ROOM',
+              payload: { roomId: pending.roomId, user: pending.user, allowCreate: pending.allowCreate },
+            } as any;
             // eslint-disable-next-line no-console
-            console.debug('[RoomStore] sending JOIN_ROOM', { roomId, user });
+            console.debug('[RoomStore] sending JOIN_ROOM', { roomId: pending.roomId, userId: (pending.user as any)?.id });
             this.realtime.send(join);
-          } finally {
-            // cleanup status subscription after first connected
-            if (this.statusSub) {
-              this.statusSub.unsubscribe();
-              this.statusSub = null;
-            }
           }
         }
       });
@@ -137,6 +150,7 @@ export class RoomStoreService {
     // clear stored ids and cleanup subscriptions
     this.currentRoomId = null;
     this.currentUserId = null;
+    this.pendingJoin = null;
     this.cleanup();
   }
 

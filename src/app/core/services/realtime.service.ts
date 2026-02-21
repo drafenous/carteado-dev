@@ -5,6 +5,7 @@ import { ClientEvent, ServerEvent } from '../models/websocket-events';
 @Injectable({ providedIn: 'root' })
 export class RealtimeService {
   private ws: WebSocket | null = null;
+  private manualDisconnect = false;
 
   constructor(private ngZone: NgZone) {}
   private message$ = new Subject<ServerEvent>();
@@ -26,6 +27,7 @@ export class RealtimeService {
       return;
     }
 
+    this.manualDisconnect = false;
     this.status$.next('connecting');
     this.ws = new WebSocket(wsUrl);
 
@@ -47,7 +49,9 @@ export class RealtimeService {
     this.ws.onclose = () => {
       this.status$.next('disconnected');
       this.stopHeartbeat();
-      this.handleReconnect(wsUrl);
+      if (!this.manualDisconnect) {
+        this.handleReconnect(wsUrl);
+      }
     };
 
     this.ws.onerror = () => {
@@ -56,6 +60,7 @@ export class RealtimeService {
   }
 
   disconnect(): void {
+    this.manualDisconnect = true;
     this.stopHeartbeat();
     if (this.ws) {
       try {

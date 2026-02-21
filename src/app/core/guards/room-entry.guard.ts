@@ -10,15 +10,19 @@ export const roomEntryGuard: CanActivateFn = (route, state) => {
   // Check persisted user identity (name + teamRole) via LocalStorageService
   let name = '';
   let teamRole = '';
+  let teamRoleCustom = '';
   try {
-    name = localStorageService.getItem('user-name') || '';
-    teamRole = localStorageService.getItem('user-team-role') || '';
+    name = (localStorageService.getItem('user-name') || '').trim();
+    teamRole = (localStorageService.getItem('user-team-role') || '').trim();
+    teamRoleCustom = (localStorageService.getItem('user-team-role-custom') || '').trim();
   } catch {
     name = '';
     teamRole = '';
+    teamRoleCustom = '';
   }
 
-  if (name && teamRole) {
+  const hasRole = teamRole && (teamRole !== 'other' || !!teamRoleCustom);
+  if (name && hasRole) {
     return true;
   }
 

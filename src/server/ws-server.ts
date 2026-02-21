@@ -199,12 +199,16 @@ function handleMessage(ws: WS, ev: any) {
   const payload = ev.payload;
   switch (type) {
     case 'JOIN_ROOM': {
-      const { roomId, user } = payload;
+      const { roomId, user, allowCreate } = payload;
       if (!roomId || !user) {
         ws.send(JSON.stringify({ type: 'ERROR', payload: { code: 'INVALID_JOIN', message: 'roomId and user required' } }));
         return;
       }
       let room = rooms.get(roomId);
+      if (!room && !allowCreate) {
+        ws.send(JSON.stringify({ type: 'ERROR', payload: { code: 'ROOM_NOT_FOUND', message: 'Room not found' } }));
+        return;
+      }
       const userObj: User = {
         id: user.id,
         name: user.name,

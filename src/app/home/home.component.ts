@@ -28,13 +28,14 @@ export class HomeComponent implements OnInit {
   roomIdControl = new FormControl<string>('');
   teamRoleControl = new FormControl<string>('');
   teamRoleOtherControl = new FormControl<string>('');
+  invalidRoomMessage = '';
 
   public ICONS = {
     createRoom: faMugHot,
     joinRoom: faRightToBracket,
   };
 
-  constructor(private appService: AppService, private router: Router) {}
+  constructor(private appService: AppService, private router: Router, private route: ActivatedRoute) {}
 
   get userName$() {
     return this.appService.userName$;
@@ -51,14 +52,12 @@ export class HomeComponent implements OnInit {
       this.teamRoleOtherControl.setValue(v || '');
     });
 
-    // prefill roomId from query param if present (guard for SSR)
-    if (typeof window !== 'undefined') {
-      const query = new URLSearchParams(window.location.search);
-      const preset = query.get('roomId');
-      if (preset) {
-        this.roomIdControl.setValue(preset);
-      }
-    }
+    // prefill roomId and invalid-room hint from query params
+    this.route.queryParamMap.pipe(take(1)).subscribe((params) => {
+      const preset = params.get('roomId');
+      if (preset) this.roomIdControl.setValue(preset);
+      this.invalidRoomMessage = params.get('invalidRoom') === '1' ? 'Invalid room. Check the code and try again.' : '';
+    });
 
     this.userNameControl.valueChanges
       .pipe(debounceTime(300))
@@ -71,17 +70,20 @@ export class HomeComponent implements OnInit {
     this.teamRoleOtherControl.valueChanges.pipe(debounceTime(200)).subscribe((v) => {
       this.appService.userTeamRoleCustom = v || '';
     });
+    this.roomIdControl.valueChanges.pipe(debounceTime(100)).subscribe(() => {
+      this.invalidRoomMessage = '';
+    });
   }
 
   handleCreateRoom(_event: Event): void {
     // create simple deterministic room id for now
     const id = Math.random().toString(36).slice(2, 9);
-    this.router.navigate(['room', id]);
+    this.router.navigate(['room', id], { queryParams: { mode: 'create' } });
   }
 
   handleJoinRoom(_event: Event): void {
-    const id = this.roomIdControl.value || '';
+    const id = (this.roomIdControl.value || '').trim();
     if (!id) return;
-    this.router.navigate(['room', id]);
+    this.router.navigate(['room', id], { queryParams: { mode: 'join' } });
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { RealtimeService } from './realtime.service';
 import { RoomState } from '../models/room-state';
 import { ServerEvent, ClientEvent } from '../models/websocket-events';
@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 export class RoomStoreService {
   private room$ = new BehaviorSubject<RoomState | null>(null);
   private revealTick$ = new BehaviorSubject<number>(0);
+  private error$ = new Subject<{ code: string; message: string }>();
   private sub: Subscription | null = null;
   private statusSub: Subscription | null = null;
   private statusMonitorSub: Subscription | null = null;
@@ -66,7 +67,11 @@ export class RoomStoreService {
     return this.revealTick$.asObservable();
   }
 
-  connect(roomId: string, user: Partial<User>) {
+  public get errors$() {
+    return this.error$.asObservable();
+  }
+
+  connect(roomId: string, user: Partial<User>, allowCreate = false) {
     const baseUrl = this.wsUrl || this.resolveWsUrl();
     const url = baseUrl
       .replace('{roomId}', encodeURIComponent(roomId))
@@ -80,7 +85,7 @@ export class RoomStoreService {
       this.statusSub = this.realtime.status.subscribe((s) => {
         if (s === 'connected') {
           try {
-            const join: ClientEvent = { type: 'JOIN_ROOM', payload: { roomId, user } } as any;
+            const join: ClientEvent = { type: 'JOIN_ROOM', payload: { roomId, user, allowCreate } } as any;
             // helpful debug
             // eslint-disable-next-line no-console
             console.debug('[RoomStore] sending JOIN_ROOM', { roomId, user });
@@ -244,6 +249,10 @@ export class RoomStoreService {
         if (!room) return;
         room.voting = { isActive: false, isRevealed: false, votes: {} };
         this.room$.next({ ...room, updatedAt: Date.now() });
+        break;
+      }
+      case 'ERROR': {
+        this.error$.next(ev.payload);
         break;
       }
       default:

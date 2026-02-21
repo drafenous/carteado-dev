@@ -1,7 +1,7 @@
 
 import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChartSimple, faClockRotateLeft, faFileCsv, faCopy, faLink, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ContentBoxComponent } from '../common/content-box/content-box.component';
@@ -49,6 +49,7 @@ export class RoomComponent implements OnDestroy {
     private appService: AppService,
     public roomStore: RoomStoreService,
     private route: ActivatedRoute,
+    private router: Router,
     private localStorage: LocalStorageService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone
@@ -63,6 +64,17 @@ export class RoomComponent implements OnDestroy {
       return;
     }
     const roomId = this.route.snapshot.paramMap.get('roomId') || '';
+    const mode = this.route.snapshot.queryParamMap.get('mode') || '';
+    const allowCreate = mode === 'create';
+    // Defensive fallback in case guard is bypassed on direct URL access.
+    const storedName = (this.localStorage.getItem('user-name') || '').trim();
+    const storedRole = (this.localStorage.getItem('user-team-role') || '').trim();
+    const storedRoleCustom = (this.localStorage.getItem('user-team-role-custom') || '').trim();
+    const hasIdentity = !!storedName && !!storedRole && (storedRole !== 'other' || !!storedRoleCustom);
+    if (!hasIdentity) {
+      this.router.navigate(['/'], { queryParams: roomId ? { roomId } : {} });
+      return;
+    }
     // build user object from stored details (SSR-safe)
     let name = this.userName || 'Guest';
     let teamRole: string | undefined = undefined;
@@ -97,7 +109,7 @@ export class RoomComponent implements OnDestroy {
       teamRoleCustom: teamRoleCustom || undefined,
     };
 
-    this.roomStore.connect(roomId, user);
+    this.roomStore.connect(roomId, user, allowCreate);
 
     const stateSub = this.roomStore.roomState$.subscribe((state) => {
       this.ngZone.run(() => {
@@ -131,6 +143,15 @@ export class RoomComponent implements OnDestroy {
       });
     });
     this._subs.push(revealSub);
+
+    const errorsSub = this.roomStore.errors$.subscribe((err) => {
+      if (err?.code === 'ROOM_NOT_FOUND') {
+        this.ngZone.run(() => {
+          this.router.navigate(['/'], { queryParams: { roomId, invalidRoom: '1' } });
+        });
+      }
+    });
+    this._subs.push(errorsSub);
   }
 
   ngOnDestroy(): void {

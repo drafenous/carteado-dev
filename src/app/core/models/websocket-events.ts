@@ -4,7 +4,7 @@ import { User } from './user';
 
 // Client -> Server
 export type ClientEvent =
-  | { type: 'JOIN_ROOM'; payload: { roomId: string; user: Partial<User> } }
+  | { type: 'JOIN_ROOM'; payload: { roomId: string; user: Partial<User>; allowCreate?: boolean } }
   | { type: 'LEAVE_ROOM'; payload: { roomId: string; userId: string } }
   | { type: 'RECONNECT'; payload: { roomId: string; userId: string; sessionId: string } }
   | { type: 'CAST_VOTE'; payload: { roomId: string; userId: string; vote: string | null } }

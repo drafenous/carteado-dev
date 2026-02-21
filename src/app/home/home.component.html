@@ -98,6 +98,9 @@
             </button>
           </app-tooltip>
         </div>
+        @if (invalidRoomMessage) {
+        <p class="mt-2 text-sm text-red-600">{{ invalidRoomMessage }}</p>
+        }
       </div>
     </div>
   </div>

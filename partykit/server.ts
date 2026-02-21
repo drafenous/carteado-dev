@@ -1,6 +1,25 @@
 import type { RoomState, VotingRoundSummary, VotingState } from '../src/app/core/models/room-state';
 import type { User } from '../src/app/core/models/user';
 
+declare namespace Party {
+  interface Connection {
+    id: string;
+    send(message: string): void;
+  }
+
+  interface Room {
+    id: string;
+    getConnections(): Iterable<Connection>;
+  }
+
+  interface Server {
+    room: Room;
+    onConnect?(conn: Connection): void;
+    onClose?(conn: Connection): void;
+    onMessage?(message: string | ArrayBuffer | ArrayBufferView, sender: Connection): void;
+  }
+}
+
 type ConnectionMeta = { userId?: string; sessionId?: string };
 
 const DEFAULT_CARD_MODEL = {
@@ -184,9 +203,15 @@ export default class CarteadoPartyServer implements Party.Server {
 
     switch (type) {
       case 'JOIN_ROOM': {
+        const roomId = payload?.roomId;
         const user = payload?.user;
+        const allowCreate = !!payload?.allowCreate;
         if (!user) {
           sender.send(JSON.stringify({ type: 'ERROR', payload: { code: 'INVALID_JOIN', message: 'user required' } }));
+          return;
+        }
+        if (roomId && roomId !== this.room.id) {
+          sender.send(JSON.stringify({ type: 'ERROR', payload: { code: 'INVALID_ROOM', message: 'Room id mismatch' } }));
           return;
         }
         const userObj: User = {
@@ -201,6 +226,10 @@ export default class CarteadoPartyServer implements Party.Server {
         };
 
         if (!this.state) {
+          if (!allowCreate) {
+            sender.send(JSON.stringify({ type: 'ERROR', payload: { code: 'ROOM_NOT_FOUND', message: 'Room not found' } }));
+            return;
+          }
           userObj.role = 'admin';
           this.state = this.createRoom(userObj);
         } else {

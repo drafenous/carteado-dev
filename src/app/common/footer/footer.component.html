@@ -2,7 +2,7 @@
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col items-center gap-4 sm:gap-6 max-w-2xl mx-auto">
       <p class="text-sm text-neutral-600">
-        Made with <span class="text-red-500">❤️</span>, <code class="px-1.5 py-0.5 rounded bg-neutral-200/80 text-neutral-700 text-xs font-mono">&lt;/&gt;</code> and <span aria-hidden="true">☕</span>
+        Made with <span class="text-red-500" aria-label="love">❤️</span>, <code class="px-1.5 py-0.5 rounded bg-neutral-200/80 text-neutral-700 text-xs font-mono">&lt;/&gt;</code> and <span aria-hidden="true">☕</span><span class="sr-only">coffee</span>
       </p>
       <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
         <p class="text-sm text-neutral-600 text-center sm:text-left">
@@ -13,6 +13,7 @@
           <button
             type="submit"
             name="submit"
+            aria-label="Donate with PayPal"
             class="btn-primary inline-flex items-center gap-2 rounded-full font-semibold px-6 py-2.5 text-sm shadow-sm hover:shadow"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

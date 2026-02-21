@@ -1,7 +1,7 @@
 <header class="w-full sticky top-0 z-50 pt-2 bg-[var(--table-bg)]">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16">
     <div
-      class="surface-panel flex justify-between mx-auto h-full px-4 sm:px-6 md:px-8 rounded-2xl md:rounded-3xl overflow-hidden"
+      class="surface-panel flex justify-between mx-auto h-full px-4 sm:px-6 md:px-8 rounded-2xl md:rounded-3xl overflow-visible"
     >
     <div class="site-logo h-full flex align-middle items-center gap-2 font-semibold text-neutral-900">
       <svg
@@ -10,7 +10,7 @@
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <g>
+        <g fill="#176a3b">
           <path
             class="header-logo-card header-logo-card-1"
             d="m48.34 10-6.27-2v29.12l7.81-24.12a2.41 2.41 0 0 0 -1.53-3z"
@@ -27,27 +27,84 @@
       </svg>
       <span>Carteado Dev</span>
     </div>
-    <nav class="flex align-middle">
-      <app-tooltip text="Home">
+    <nav class="flex align-middle items-center gap-0.5 sm:gap-1" aria-label="Primary navigation">
+      <div class="relative theme-menu-root h-full inline-flex items-center">
+        <button
+          type="button"
+          aria-label="Theme settings"
+          class="btn-minimal btn-header border-0 px-2 sm:px-3 h-9 sm:h-10 rounded-lg inline-flex items-center gap-1"
+          (click)="toggleThemeMenu($event)"
+        >
+          <fa-icon [icon]="currentThemeIcon()" [fixedWidth]="true" />
+          <fa-icon [icon]="ICONS.chevronDown" [fixedWidth]="true" class="text-[10px] opacity-70" />
+        </button>
+
+        @if (showThemeMenu) {
+        <div class="absolute right-0 top-[calc(100%+0.35rem)] min-w-40 surface-panel rounded-xl z-[90] p-1">
+          <button
+            type="button"
+            class="w-full btn-minimal border-0 justify-between h-9 px-3 rounded-lg text-sm inline-flex items-center"
+            [attr.aria-pressed]="isThemePreference('light')"
+            (click)="setThemePreference('light')"
+          >
+            <span class="inline-flex items-center gap-2">
+              <fa-icon [icon]="ICONS.sun" [fixedWidth]="true" />
+              Light
+            </span>
+            @if (isThemePreference('light')) {
+            <fa-icon [icon]="ICONS.check" [fixedWidth]="true" />
+            }
+          </button>
+          <button
+            type="button"
+            class="w-full btn-minimal border-0 justify-between h-9 px-3 rounded-lg text-sm inline-flex items-center"
+            [attr.aria-pressed]="isThemePreference('dark')"
+            (click)="setThemePreference('dark')"
+          >
+            <span class="inline-flex items-center gap-2">
+              <fa-icon [icon]="ICONS.moon" [fixedWidth]="true" />
+              Dark
+            </span>
+            @if (isThemePreference('dark')) {
+            <fa-icon [icon]="ICONS.check" [fixedWidth]="true" />
+            }
+          </button>
+          <button
+            type="button"
+            class="w-full btn-minimal border-0 justify-between h-9 px-3 rounded-lg text-sm inline-flex items-center"
+            [attr.aria-pressed]="isThemePreference('system')"
+            (click)="setThemePreference('system')"
+          >
+            <span class="inline-flex items-center gap-2">
+              <fa-icon [icon]="ICONS.system" [fixedWidth]="true" />
+              System
+            </span>
+            @if (isThemePreference('system')) {
+            <fa-icon [icon]="ICONS.check" [fixedWidth]="true" />
+            }
+          </button>
+        </div>
+        }
+      </div>
+
       <button
         type="button"
-        class="btn-minimal btn-header border-0 px-2 sm:px-4 h-full rounded-none"
+        aria-label="Go to Home"
+        class="btn-minimal btn-header border-0 px-2 sm:px-3 h-9 sm:h-10 rounded-lg inline-flex items-center gap-1.5"
         (click)="handleNavClick(['/'])"
       >
         <fa-icon [icon]="ICONS.home" [fixedWidth]="true" />
         <div class="hidden sm:block">Home</div>
       </button>
-      </app-tooltip>
-      <app-tooltip text="About">
       <button
         type="button"
-        class="btn-minimal btn-header border-0 px-2 sm:px-4 h-full rounded-none"
+        aria-label="Go to About"
+        class="btn-minimal btn-header border-0 px-2 sm:px-3 h-9 sm:h-10 rounded-lg inline-flex items-center gap-1.5"
         (click)="handleNavClick(['/about'])"
       >
         <fa-icon [icon]="ICONS.about" [fixedWidth]="true" />
         <div class="hidden sm:block">About</div>
       </button>
-      </app-tooltip>
     </nav>
     </div>
   </div>

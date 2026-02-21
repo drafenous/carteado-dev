@@ -15,7 +15,7 @@
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <g>
+        <g fill="#176a3b">
           <path
             class="logo-card logo-card-1"
             d="m48.34 10-6.27-2v29.12l7.81-24.12a2.41 2.41 0 0 0 -1.53-3z"
@@ -34,17 +34,20 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
       <div>
-        <label class="block text-sm font-medium text-neutral-700 mb-1">Your name</label>
+        <label for="userName" class="block text-sm font-medium text-neutral-700 mb-1">Your name</label>
         <input
+          id="userName"
           type="text"
           placeholder="What's your name or nickname?"
           class="surface-panel rounded-xl block h-11 sm:h-12 w-full px-4"
+          autocomplete="name"
+          required
           [formControl]="userNameControl"
         />
       </div>
       <div>
-        <label class="block text-sm font-medium text-neutral-700 mb-1">Profile role</label>
-        <select class="surface-panel w-full rounded-xl h-11 sm:h-12 px-3" [formControl]="teamRoleControl">
+        <label for="teamRole" class="block text-sm font-medium text-neutral-700 mb-1">Profile role</label>
+        <select id="teamRole" class="surface-panel w-full rounded-xl h-11 sm:h-12 px-3" [formControl]="teamRoleControl">
           <option value="">Select a role</option>
           <option value="frontend">Frontend</option>
           <option value="backend">Backend</option>
@@ -58,9 +61,11 @@
       @if (teamRoleControl.value === 'other') {
       <div class="md:col-span-2">
         <input
+          id="teamRoleOther"
           type="text"
           placeholder="Describe your role"
           class="surface-panel rounded-xl block h-11 sm:h-12 w-full px-4"
+          autocomplete="organization-title"
           [formControl]="teamRoleOtherControl"
         />
       </div>
@@ -83,9 +88,12 @@
         <div class="text-sm text-neutral-600 mb-2">Join with code</div>
         <div class="flex gap-2">
           <input
+            id="roomId"
             type="text"
             placeholder="Room code"
             class="surface-panel rounded-xl h-11 sm:h-12 w-full px-4"
+            autocomplete="off"
+            aria-describedby="join-room-help"
             [formControl]="roomIdControl"
           />
           <app-tooltip text="Join room">
@@ -99,7 +107,9 @@
           </app-tooltip>
         </div>
         @if (invalidRoomMessage) {
-        <p class="mt-2 text-sm text-red-600">{{ invalidRoomMessage }}</p>
+        <p id="join-room-help" class="mt-2 text-sm text-red-600" role="alert" aria-live="assertive">{{ invalidRoomMessage }}</p>
+        } @else {
+        <p id="join-room-help" class="sr-only">Enter a valid room code to join an existing room.</p>
         }
       </div>
     </div>

@@ -1,6 +1,12 @@
 <div class="min-h-screen flex flex-col">
+  <a
+    href="#main-content"
+    class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-[100] bg-white border border-neutral-300 rounded px-3 py-2 text-sm"
+  >
+    Skip to main content
+  </a>
   <app-header />
-  <main class="container mx-auto px-4 sm:px-6 lg:px-8 flex-1 pb-6 sm:pb-8">
+  <main id="main-content" class="container mx-auto px-4 sm:px-6 lg:px-8 flex-1 pb-6 sm:pb-8" role="main">
     <router-outlet></router-outlet>
   </main>
   <app-footer />

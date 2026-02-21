@@ -22,6 +22,7 @@ export const routes: Routes = [
         path: 'room/:roomId',
         loadComponent: () =>
           import('./room/room.component').then((c) => c.RoomComponent),
+        canActivate: [() => import('./core/guards/room-entry.guard').then(m => m.roomEntryGuard)],
       },
     ],
   },

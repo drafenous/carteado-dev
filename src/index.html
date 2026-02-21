@@ -6,6 +6,37 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      (function () {
+        try {
+          const host = location.hostname;
+          if (host === 'localhost' || host === '127.0.0.1') {
+            // Local development: PartyKit default endpoint
+            window.__WS_URL__ = `ws://${host}:1999/parties/main/:roomId`;
+          } else {
+            // Vercel production: fetch runtime-configured WS URL (e.g., PartyKit).
+            // Fallback to same-origin /api/ws if no env is configured.
+            let configuredWsUrl = '';
+            try {
+              const xhr = new XMLHttpRequest();
+              xhr.open('GET', '/api/ws-url', false);
+              xhr.send(null);
+              if (xhr.status >= 200 && xhr.status < 300 && xhr.responseText) {
+                const parsed = JSON.parse(xhr.responseText);
+                if (parsed && typeof parsed.wsUrl === 'string') {
+                  configuredWsUrl = parsed.wsUrl.trim();
+                }
+              }
+            } catch (_) {
+              // ignore and use fallback
+            }
+            window.__WS_URL__ = configuredWsUrl || location.origin.replace(/^http/, 'ws') + '/parties/main/:roomId';
+          }
+        } catch (e) {
+          // noop
+        }
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>

@@ -1,0 +1,5 @@
+{
+  "name": "carteado-dev-realtime",
+  "main": "partykit/server.ts",
+  "compatibilityDate": "2024-11-01"
+}

@@ -1,16 +1,40 @@
-<div class="flex gap-4 justify-between sm:justify-end">
-  <button
-    type="button"
-    class="text-neutral-600 hover:bg-neutral-200 transition-all px-4 py-2 rounded-md"
-  >
-    <fa-icon [icon]="ICONS.eye" [fixedWidth]="true" />
-    Become a spectator
-  </button>
-  <button
-    type="button"
-    class="text-red-500 hover:bg-red-500/50 hover:text-neutral-900 transition-all px-4 py-2 rounded-md"
-  >
-    <fa-icon [icon]="ICONS.rightToBracket" [fixedWidth]="true" />
-    Leave room
-  </button>
+<div class="flex flex-wrap gap-2 sm:gap-4 justify-between sm:justify-end">
+  @if (isSpectator) {
+  <app-tooltip text="Become a voter">
+    <button
+      type="button"
+      class="btn-minimal h-10 w-10 inline-flex items-center justify-center text-sm sm:text-base"
+      aria-label="Become a voter"
+      (click)="becomeVoter()"
+    >
+      <fa-icon [icon]="ICONS.userCircle" [fixedWidth]="true" />
+    </button>
+  </app-tooltip>
+  } @else {
+  <app-tooltip text="Become a spectator">
+    <button
+      type="button"
+      class="btn-minimal h-10 w-10 inline-flex items-center justify-center text-sm sm:text-base"
+      aria-label="Become a spectator"
+      (click)="becomeSpectator()"
+    >
+      <fa-icon [icon]="ICONS.mugHot" [fixedWidth]="true" />
+    </button>
+  </app-tooltip>
+  }
+  @if (notificationMessage) {
+    <div aria-live="polite" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 left-4 sm:left-auto bg-neutral-900 text-white px-3 py-2 sm:px-4 rounded-md shadow-md z-50 text-sm sm:text-base">
+      {{ notificationMessage }}
+    </div>
+  }
+  <app-tooltip text="Leave room">
+    <button
+      type="button"
+      class="h-10 w-10 inline-flex items-center justify-center rounded-md text-sm sm:text-base bg-red-600 text-white hover:bg-red-700 transition-all"
+      aria-label="Leave room"
+      (click)="leaveRoom()"
+    >
+      <fa-icon [icon]="ICONS.rightToBracket" [fixedWidth]="true" />
+    </button>
+  </app-tooltip>
 </div>

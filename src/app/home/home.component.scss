@@ -1,0 +1,52 @@
+.home-logo {
+  .logo-card {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    animation: dealIn 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transition: transform 220ms ease, opacity 220ms ease;
+  }
+
+  .logo-card-1 {
+    animation-delay: 40ms;
+  }
+
+  .logo-card-2 {
+    animation-delay: 120ms;
+  }
+
+  .logo-card-3 {
+    animation-delay: 200ms;
+  }
+
+  &:hover .logo-card-1 {
+    transform: translate(-1px, -1px) rotate(-3deg);
+  }
+
+  &:hover .logo-card-2 {
+    transform: translate(0, -2px) rotate(2deg);
+  }
+
+  &:hover .logo-card-3 {
+    transform: translate(1px, -1px) rotate(4deg);
+  }
+}
+
+@keyframes dealIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.94) rotate(-5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-logo .logo-card {
+    animation: none;
+    opacity: 1;
+    transition: none;
+  }
+}

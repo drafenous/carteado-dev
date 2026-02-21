@@ -1,0 +1,19 @@
+<span
+  class="relative inline-flex"
+  (mouseenter)="show = true"
+  (mouseleave)="show = false"
+  (focusin)="show = true"
+  (focusout)="show = false"
+>
+  <ng-content></ng-content>
+
+  @if (show) {
+  <span
+    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap bg-neutral-900 text-white text-xs sm:text-sm px-2.5 py-1.5 rounded-lg shadow-lg z-50"
+    role="tooltip"
+  >
+    {{ text }}
+  </span>
+  }
+</span>
+

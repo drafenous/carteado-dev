@@ -14,6 +14,28 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
+## Deploy on Vercel
+
+- This project includes a `vercel.json` configured for SPA routing and Angular build output.
+- Configure a Vercel environment variable for realtime:
+  - `WS_URL` (recommended), e.g. `wss://<your-partykit-host>/parties/main/:roomId`
+- Optional fallbacks recognized by the runtime endpoint:
+  - `PARTYKIT_WS_URL`
+  - `NEXT_PUBLIC_WS_URL`
+- During runtime, the app fetches `/api/ws-url` to resolve the websocket URL in production.
+
+## PartyKit deploy
+
+- PartyKit config is in `partykit.json` with entrypoint `partykit/server.ts`.
+- Available scripts:
+  - `npm run partykit:dev`
+  - `npm run partykit:deploy`
+- Room endpoint pattern:
+  - `ws(s)://<partykit-host>/parties/main/:roomId`
+- The client supports room interpolation in `WS_URL`:
+  - `:roomId` or `{roomId}`
+  - Example: `wss://<your-partykit-host>/parties/main/:roomId`
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).

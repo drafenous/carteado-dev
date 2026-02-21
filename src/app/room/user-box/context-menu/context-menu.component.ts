@@ -20,13 +20,14 @@ import {
 import { BehaviorSubject, Observable } from 'rxjs';
 import { PopupAlertComponent } from '../../../common/popup-alert/popup-alert.component';
 import { User } from '../../../core/models/user';
+import { RoomStoreService } from '../../../core/services/room-store.service';
+import { LocalStorageService } from '../../../core/services/local-storage.service';
 
 @Component({
-  selector: 'app-context-menu',
-  standalone: true,
-  imports: [CommonModule, FontAwesomeModule, PopupAlertComponent],
-  templateUrl: './context-menu.component.html',
-  styleUrl: './context-menu.component.scss',
+    selector: 'app-context-menu',
+    imports: [CommonModule, FontAwesomeModule, PopupAlertComponent],
+    templateUrl: './context-menu.component.html',
+    styleUrl: './context-menu.component.scss'
 })
 export class ContextMenuComponent {
   public ICONS = {
@@ -52,7 +53,7 @@ export class ContextMenuComponent {
   }
 
   @Output() closeContextMenu = new EventEmitter<void>();
-  @Output() kickUserEvent = new EventEmitter<number>();
+  @Output() kickUserEvent = new EventEmitter<string>();
 
   @ViewChild('ContextMenu', { static: false }) contextMenu!: ElementRef;
   @ViewChild('PopupAlert', { static: false }) popupAlert!: ElementRef;
@@ -67,11 +68,19 @@ export class ContextMenuComponent {
     this.closeContextMenu.emit();
   }
 
-  constructor() {}
+  constructor(private roomStore: RoomStoreService, private localStorage: LocalStorageService) {}
 
   public handleToggleVotter(_event: Event, canVote: boolean): void {
     this.closeContextMenu.emit();
-    this.user().isVotter = canVote;
+    const roomId = localStorage.getItem('room-id') || '';
+    const userId = localStorage.getItem('user-id') || '';
+    if (!roomId || !userId) return;
+    const target = String(this.user().id);
+    const u = this.user();
+    const role = canVote
+      ? (u.role === 'admin_spectator' ? 'admin' : 'voter')
+      : (u.role === 'admin' ? 'admin_spectator' : 'spectator');
+    this.roomStore.updateRole(roomId, userId, target, role);
   }
 
   public handleTurnAdmin(_event: Event, _user?: User): void {
@@ -85,9 +94,14 @@ export class ContextMenuComponent {
 
   public handleConfirmTurnAdmin(_event: Event): void {
     this.showAdminAlert = false;
+    const roomId = this.localStorage.getItem('room-id') || '';
+    const userId = this.localStorage.getItem('user-id') || '';
+    if (!roomId || !userId) return;
+    // transfer admin to this.user().id
+    this.roomStore.updateRole(roomId, userId, String(this.user().id), 'admin');
   }
 
-  public handleKick(_event: Event, kickedUserId: number): void {
+  public handleKick(_event: Event, kickedUserId: string): void {
     this.closeContextMenu.emit();
     this.kickUserEvent.emit(kickedUserId);
   }

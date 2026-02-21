@@ -1,6 +1,7 @@
 import { APP_BASE_HREF } from '@angular/common';
-import { CommonEngine } from '@angular/ssr';
+import { CommonEngine } from '@angular/ssr/node';
 import express from 'express';
+import http from 'http';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
@@ -20,12 +21,13 @@ export function app(): express.Express {
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
-  server.get('*.*', express.static(browserDistFolder, {
+  // Use express.static middleware to avoid path-to-regexp parsing issues with wildcard patterns.
+  server.use(express.static(browserDistFolder, {
     maxAge: '1y'
   }));
 
   // All regular routes use the Angular engine
-  server.get('*', (req, res, next) => {
+  server.get('*any', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
     commonEngine
@@ -36,7 +38,21 @@ export function app(): express.Express {
         publicPath: browserDistFolder,
         providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
-      .then((html) => res.send(html))
+      .then((html) => {
+        try {
+          // Derive a sensible PartyKit URL for the rendered page so the client can
+          // immediately connect after hydration. Use wss for https, ws for http.
+          const proto = protocol === 'https' ? 'wss' : 'ws';
+          const host = headers.host || req.headers.host || 'localhost';
+          const wsUrl = `${proto}://${host}/parties/main/:roomId`;
+          const injection = `<script>window.__WS_URL__ = ${JSON.stringify(wsUrl)};</script>`;
+          // Inject before </head> so it's available during client bootstrap
+          const injectedHtml = html.replace('</head>', `${injection}</head>`);
+          return res.send(injectedHtml);
+        } catch (e) {
+          return res.send(html);
+        }
+      })
       .catch((err) => next(err));
   });
 
@@ -47,7 +63,20 @@ function run(): void {
   const port = process.env['PORT'] || 4000;
 
   // Start up the Node server
-  const server = app();
+  const expressApp = app();
+  const server = http.createServer(expressApp);
+  // attach websocket server
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { attachWebsocketServer } = require('./src/server/ws-server');
+    if (attachWebsocketServer) {
+      attachWebsocketServer(server);
+      console.log('WebSocket server attached on /api/ws');
+    }
+  } catch (e) {
+    console.warn('WebSocket server not attached', e);
+  }
+
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });

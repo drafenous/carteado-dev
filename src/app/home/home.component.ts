@@ -2,27 +2,32 @@ import { Component, OnInit } from '@angular/core';
 import { ContentBoxComponent } from '../common/content-box/content-box.component';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AppService } from '../core/services/app.service';
+import { ActivatedRoute } from '@angular/router';
 import { debounceTime, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faMugHot, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
+import { TooltipComponent } from '../common/tooltip/tooltip.component';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [
-    ContentBoxComponent,
-    ReactiveFormsModule,
-    CommonModule,
-    RouterModule,
-    FontAwesomeModule,
-  ],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+    selector: 'app-home',
+    imports: [
+        ContentBoxComponent,
+        ReactiveFormsModule,
+        CommonModule,
+        RouterModule,
+        FontAwesomeModule,
+        TooltipComponent,
+    ],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
   userNameControl = new FormControl<string>('', [Validators.required]);
+  roomIdControl = new FormControl<string>('');
+  teamRoleControl = new FormControl<string>('');
+  teamRoleOtherControl = new FormControl<string>('');
 
   public ICONS = {
     createRoom: faMugHot,
@@ -39,19 +44,44 @@ export class HomeComponent implements OnInit {
     this.appService.userName$.pipe(take(1)).subscribe((userName) => {
       this.userNameControl.setValue(userName, { emitEvent: false });
     });
+    this.appService.userTeamRole$.pipe(take(1)).subscribe((role) => {
+      this.teamRoleControl.setValue(role || '');
+    });
+    this.appService.userTeamRoleCustom$.pipe(take(1)).subscribe((v) => {
+      this.teamRoleOtherControl.setValue(v || '');
+    });
+
+    // prefill roomId from query param if present (guard for SSR)
+    if (typeof window !== 'undefined') {
+      const query = new URLSearchParams(window.location.search);
+      const preset = query.get('roomId');
+      if (preset) {
+        this.roomIdControl.setValue(preset);
+      }
+    }
 
     this.userNameControl.valueChanges
       .pipe(debounceTime(300))
       .subscribe((userName) => {
         this.appService.userName = userName || '';
       });
+    this.teamRoleControl.valueChanges.pipe(debounceTime(200)).subscribe((role) => {
+      this.appService.userTeamRole = role || '';
+    });
+    this.teamRoleOtherControl.valueChanges.pipe(debounceTime(200)).subscribe((v) => {
+      this.appService.userTeamRoleCustom = v || '';
+    });
   }
 
   handleCreateRoom(_event: Event): void {
-    this.router.navigate(['room', '123456']);
+    // create simple deterministic room id for now
+    const id = Math.random().toString(36).slice(2, 9);
+    this.router.navigate(['room', id]);
   }
 
   handleJoinRoom(_event: Event): void {
-    this.router.navigate(['room', '123456']);
+    const id = this.roomIdControl.value || '';
+    if (!id) return;
+    this.router.navigate(['room', id]);
   }
 }

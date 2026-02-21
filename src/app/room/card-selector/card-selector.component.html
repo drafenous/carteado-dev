@@ -1,0 +1,233 @@
+<div class="surface-panel rounded-lg p-3 sm:p-4 md:p-6">
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+      <div class="w-full md:flex-1">
+        @if (isAdmin()) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label for="cardModel" class="block text-sm font-medium text-neutral-700 mb-1">
+              Card deck
+            </label>
+            <select
+              id="cardModel"
+              class="w-full h-11 rounded border border-neutral-300 px-3"
+              [ngModel]="selectedModelId"
+              (ngModelChange)="handleSelectModel($event)"
+            >
+              @for (model of allModels; track model.id) {
+              <option [value]="model.id">{{ model.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label for="ticketId" class="block text-sm font-medium text-neutral-700 mb-1">
+              Ticket ID (optional)
+            </label>
+            <input
+              id="ticketId"
+              type="text"
+              class="w-full h-11 rounded border border-neutral-300 px-3"
+              placeholder="JIRA-123"
+              [ngModel]="ticketIdDraft"
+              (ngModelChange)="handleTicketIdInput($event)"
+              (blur)="commitTicketId()"
+            />
+          </div>
+        </div>
+        } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label for="cardModelReadonly" class="block text-sm font-medium text-neutral-700 mb-1">
+              Card deck
+            </label>
+            <div id="cardModelReadonly" class="h-11 rounded border border-neutral-200 bg-neutral-50 px-3 text-neutral-700 flex items-center">
+              {{ effectiveModel.name }}
+            </div>
+          </div>
+
+          <div>
+            <label for="ticketIdReadonly" class="block text-sm font-medium text-neutral-700 mb-1">
+              Ticket ID
+            </label>
+            <div id="ticketIdReadonly" class="h-11 rounded border border-neutral-200 bg-neutral-50 px-3 text-neutral-700 flex items-center">
+              {{ ticketId() || '-' }}
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      @if (isAdmin()) {
+      <div class="flex flex-wrap gap-2 md:pt-6">
+        <app-tooltip text="Import deck JSON">
+          <label class="btn-minimal inline-flex items-center justify-center h-9 w-9 text-neutral-800">
+            <input
+              type="file"
+              accept="application/json,.json"
+              class="hidden"
+              (change)="handleImportModel($event)"
+            />
+            <fa-icon [icon]="ICONS.fileImport" [fixedWidth]="true" />
+          </label>
+        </app-tooltip>
+        <app-tooltip text="Export current deck">
+          <button
+            type="button"
+            class="btn-minimal inline-flex items-center justify-center h-9 w-9 disabled:opacity-50"
+            [disabled]="selectedModel.isPreset"
+            (click)="handleExportCustomModel()"
+          >
+            <fa-icon [icon]="ICONS.fileExport" [fixedWidth]="true" />
+          </button>
+        </app-tooltip>
+      </div>
+      }
+    </div>
+
+    @if (importError) {
+    <p class="text-sm text-red-600">{{ importError }}</p>
+    }
+
+    @if (!isSpectator()) {
+    <div class="flex flex-wrap gap-2 sm:gap-3 items-center">
+      @for (card of effectiveModel.cards; track card) {
+      <app-tooltip [text]="getCardTooltipText(card)">
+      <button
+        type="button"
+        class="poker-card relative w-11 h-11 sm:w-12 sm:h-12 text-sm sm:text-base font-semibold disabled:opacity-60"
+        [class.poker-card-selected]="selectedCardValue === card"
+        [class.poker-card-is-revealed]="isRevealed()"
+        [disabled]="isRevealed()"
+        [attr.aria-label]="getCardTooltipText(card)"
+        [attr.aria-pressed]="selectedCardValue === card"
+        (click)="handleSelectCard(card)"
+        (keydown.enter)="handleSelectCard(card)"
+        (keydown.space)="$event.preventDefault(); handleSelectCard(card)"
+      >
+        <span class="poker-card-face">{{ card }}</span>
+        <span class="poker-card-face poker-card-face-back">{{ getCardTooltipText(card) }}</span>
+      </button>
+      </app-tooltip>
+      }
+    </div>
+    }
+
+    @if (isAdmin()) {
+    <div class="mt-4 border-t pt-4">
+        <button
+        type="button"
+        class="btn-minimal border-0 flex items-center gap-2 text-left w-full font-semibold text-neutral-800 px-0 py-0 hover:bg-transparent"
+        (click)="showCreateModel = !showCreateModel"
+      >
+        <fa-icon [icon]="showCreateModel ? ICONS.chevronDown : ICONS.chevronRight" [fixedWidth]="true" class="text-neutral-500" />
+        Create custom deck
+      </button>
+      @if (showCreateModel) {
+      <p class="text-sm text-neutral-600 mt-2">
+        Emojis without a value (= 0) are ignored in the summary. Use "emoji = N" to set a value.
+      </p>
+
+      <div class="mt-3 flex flex-col gap-3">
+        <div>
+          <label for="deckName" class="block text-sm font-medium text-neutral-700 mb-1">Deck Name</label>
+          <input
+            id="deckName"
+            type="text"
+            class="w-full rounded border border-neutral-300 px-3 py-2"
+            placeholder="Ex: Squad XP"
+            [(ngModel)]="newModelName"
+          />
+        </div>
+        <div>
+          <label for="cardValues" class="block text-sm font-medium text-neutral-700 mb-1">Card values</label>
+          <textarea
+            id="cardValues"
+            class="w-full rounded border border-neutral-300 px-3 py-2 min-h-20 sm:min-h-24 text-sm sm:text-base"
+            placeholder="1, 2, 3, 4, 5, 👍, 👌 = 10, ✌️ = 7"
+            [(ngModel)]="newModelCardsInput"
+            rows="3"
+          ></textarea>
+          @if (previewParseError) {
+          <p class="mt-2 text-sm text-amber-600">{{ previewParseError }}</p>
+          } @else if (previewCards.length > 0) {
+          <div class="mt-2 flex flex-wrap gap-2">
+            @for (card of previewCards; track card.display) {
+            @if (card.display) {
+            <span
+              class="inline-flex items-center gap-1 rounded border border-neutral-200 bg-neutral-50 px-2 py-1 text-sm"
+            >
+              {{ card.display }}
+              @if (card.value != null && card.value > 0) {
+              <span class="text-xs text-neutral-500">= {{ card.value }}</span>
+              }
+            </span>
+            }
+            }
+          </div>
+          }
+        </div>
+        <button
+          type="button"
+          class="btn-primary px-3 py-2 sm:px-4 text-sm w-fit"
+          (click)="handleCreateCustomModel()"
+        >
+          Save deck
+        </button>
+      </div>
+
+      @if (createError) {
+      <p class="text-sm text-red-600 mt-2">{{ createError }}</p>
+      }
+      }
+    </div>
+    }
+  </div>
+</div>
+
+<app-popup-alert [showAlert]="showImportResultPopup">
+    <div title>{{ importResultSuccess ? 'Success' : 'Error' }}</div>
+  <div body class="text-center">
+    <p class="font-semibold" [class.text-emerald-800]="importResultSuccess" [class.text-red-700]="!importResultSuccess">
+      {{ importResultMessage }}
+    </p>
+  </div>
+  <div actions class="flex gap-4">
+    <button
+      type="button"
+      class="btn-minimal w-full h-16 font-bold"
+      (click)="closeImportResultPopup()"
+    >
+      <fa-icon [icon]="ICONS.xmark" [fixedWidth]="true" />
+      Close
+    </button>
+  </div>
+</app-popup-alert>
+
+<app-popup-alert [showAlert]="showReplaceConfirmPopup">
+  <div title>Duplicate deck</div>
+  <div body class="text-center">
+    <p class="text-neutral-700">
+      A deck named "{{ pendingImportModelName }}" already exists. Do you want to replace it?
+    </p>
+  </div>
+  <div actions class="flex gap-4">
+    <button
+      type="button"
+      class="btn-minimal w-full h-16 font-bold"
+      (click)="cancelReplaceImport()"
+    >
+      <fa-icon [icon]="ICONS.xmark" [fixedWidth]="true" />
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="w-full h-16 rounded-lg transition-all font-bold bg-emerald-600 text-white hover:bg-emerald-700"
+      (click)="confirmReplaceImport()"
+    >
+      <fa-icon [icon]="ICONS.check" [fixedWidth]="true" />
+      Replace
+    </button>
+  </div>
+</app-popup-alert>
+

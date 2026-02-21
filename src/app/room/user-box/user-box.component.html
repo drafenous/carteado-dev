@@ -1,14 +1,17 @@
 <div
-  class="group flex flex-col text-center text-neutral-700 bg-white rounded-md p-4 shadow-lg hover:shadow-xl transition-all relative"
+  class="group flex flex-col text-center text-neutral-700 bg-white rounded-md p-3 sm:p-4 shadow-lg hover:shadow-xl transition-all relative"
 >
-  <div class="absolute right-1 top-1" #OptionsMenu>
-    <button
-      type="button"
-      class="opacity-25 group-hover:opacity-100"
-      (click)="handleToggleShowOptions()"
-    >
-      <fa-icon [icon]="ICONS.options" [fixedWidth]="true" [size]="'1x'" />
-    </button>
+  @if (isAdmin()) {
+  <div class="absolute right-1 top-1 z-20" #OptionsMenu>
+    <app-tooltip text="Options">
+      <button
+        type="button"
+        class="opacity-25 group-hover:opacity-100"
+        (click)="handleToggleShowOptions()"
+      >
+        <fa-icon [icon]="ICONS.options" [fixedWidth]="true" [size]="'1x'" />
+      </button>
+    </app-tooltip>
     <app-context-menu
       [isShown]="!!(showContextMenu$ | async)"
       [user]="user()"
@@ -16,15 +19,40 @@
       (closeContextMenu)="handleToggleShowOptions(false)"
     ></app-context-menu>
   </div>
-  <div>
+  }
+  <div class="relative inline-flex w-20 h-20 items-center justify-center mx-auto">
+    @if (isSpectator()) {
+    <span
+      class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-700 text-white"
+      aria-label="Spectator"
+      title="Spectator"
+    >
+      <fa-icon [icon]="ICONS.spectator" [size]="'2x'" />
+    </span>
+    } @else {
     <fa-icon
       [icon]="ICONS.userCircle"
       [fixedWidth]="true"
-      [size]="'5x'"
+      [size]="'4x'"
       class=""
     />
+    }
+    @if (hasVoted()) {
+    <span
+      class="absolute -bottom-0.5 -right-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-600 text-white border-2 border-white"
+      aria-label="Has voted"
+      title="Has voted"
+    >
+      <fa-icon [icon]="ICONS.voted" [size]="'xs'" />
+    </span>
+    }
   </div>
-  <div class="mt-4">
+  <div class="mt-3 sm:mt-4 text-sm sm:text-base">
     {{ user().name }}
   </div>
+  @if (displayRole(); as role) {
+  <div class="mt-1 text-sm text-neutral-500">
+    {{ role }}
+  </div>
+  }
 </div>

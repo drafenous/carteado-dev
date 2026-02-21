@@ -1,27 +1,28 @@
-<footer class="text-center leading-2 w-full">
-  <div class="container mx-auto">
-    <small>Made with ❤️, &lt;/&gt; and ☕.</small>
-    <div class="flex gap-2 align-middle justify-center">
-      <small
-        >Send a donation to help me to keep this project online and free for
-        all!</small
-      >
-      <form action="https://www.paypal.com/donate" method="post" target="_top">
-        <input type="hidden" name="hosted_button_id" value="GHM82LRFVH3A6" />
-        <input
-          type="image"
-          src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
-          name="submit"
-          title="PayPal - The safer, easier way to pay online!"
-          alt="Donate with PayPal button"
-        />
-        <img
-          alt=""
-          src="https://www.paypal.com/en_BR/i/scr/pixel.gif"
-          width="1"
-          height="1"
-        />
-      </form>
+<footer class="mt-auto w-full border-t border-neutral-200 bg-neutral-50 py-6 md:py-8">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col items-center gap-4 sm:gap-6 max-w-2xl mx-auto">
+      <p class="text-sm text-neutral-600">
+        Made with <span class="text-red-500">❤️</span>, <code class="px-1.5 py-0.5 rounded bg-neutral-200/80 text-neutral-700 text-xs font-mono">&lt;/&gt;</code> and <span aria-hidden="true">☕</span>
+      </p>
+      <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+        <p class="text-sm text-neutral-600 text-center sm:text-left">
+          Help keep this project online and free for everyone!
+        </p>
+        <form action="https://www.paypal.com/donate" method="post" target="_blank" rel="noopener noreferrer" class="shrink-0">
+          <input type="hidden" name="hosted_button_id" value="GHM82LRFVH3A6" />
+          <button
+            type="submit"
+            name="submit"
+            class="btn-primary inline-flex items-center gap-2 rounded-full font-semibold px-6 py-2.5 text-sm shadow-sm hover:shadow"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+          Donate
+          </button>
+          <img alt="" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" class="hidden" />
+        </form>
+      </div>
     </div>
   </div>
 </footer>

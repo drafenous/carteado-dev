@@ -1,0 +1,52 @@
+.header-logo {
+  .header-logo-card {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    animation: headerDealIn 360ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transition: transform 180ms ease;
+  }
+
+  .header-logo-card-1 {
+    animation-delay: 20ms;
+  }
+
+  .header-logo-card-2 {
+    animation-delay: 70ms;
+  }
+
+  .header-logo-card-3 {
+    animation-delay: 120ms;
+  }
+
+  &:hover .header-logo-card-1 {
+    transform: translate(-0.5px, -0.5px) rotate(-2deg);
+  }
+
+  &:hover .header-logo-card-2 {
+    transform: translate(0, -1px) rotate(1deg);
+  }
+
+  &:hover .header-logo-card-3 {
+    transform: translate(0.5px, -0.5px) rotate(2deg);
+  }
+}
+
+@keyframes headerDealIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.96) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-logo .header-logo-card {
+    animation: none;
+    opacity: 1;
+    transition: none;
+  }
+}

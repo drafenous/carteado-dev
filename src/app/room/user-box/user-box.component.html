@@ -1,12 +1,12 @@
 <div
-  class="group flex flex-col text-center text-neutral-700 bg-white rounded-md p-3 sm:p-4 shadow-lg hover:shadow-xl transition-all relative"
+  class="surface-panel group flex flex-col text-center text-[var(--text-strong)] rounded-md p-3 sm:p-4 hover:shadow-xl transition-all relative"
 >
   @if (isAdmin()) {
   <div class="absolute right-1 top-1 z-20" #OptionsMenu>
     <app-tooltip text="Options">
       <button
         type="button"
-        class="opacity-25 group-hover:opacity-100"
+      class="opacity-25 group-hover:opacity-100 text-[var(--text-muted)]"
         (click)="handleToggleShowOptions()"
       >
         <fa-icon [icon]="ICONS.options" [fixedWidth]="true" [size]="'1x'" />
@@ -51,7 +51,7 @@
     {{ user().name }}
   </div>
   @if (displayRole(); as role) {
-  <div class="mt-1 text-sm text-neutral-500">
+  <div class="mt-1 text-sm text-[var(--text-muted)]">
     {{ role }}
   </div>
   }

@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+@import "vanilla-cookieconsent/dist/cookieconsent.css";
 
 :root {
   --table-bg: #f4f5f2;
@@ -31,6 +32,64 @@
   --surface-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
   --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
   --card-shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.36);
+}
+
+/* Cookie consent: use site design tokens (adapts to light/dark via --surface, --accent, etc.) */
+#cc-main {
+  --cc-bg: var(--surface);
+  --cc-primary-color: var(--text-strong);
+  --cc-secondary-color: var(--text-muted);
+  --cc-modal-border-radius: var(--radius-lg);
+  --cc-btn-border-radius: 10px;
+  --cc-btn-primary-bg: var(--accent);
+  --cc-btn-primary-color: #fff;
+  --cc-btn-primary-border-color: var(--accent);
+  --cc-btn-primary-hover-bg: var(--accent-strong);
+  --cc-btn-primary-hover-color: #fff;
+  --cc-btn-primary-hover-border-color: var(--accent-strong);
+  --cc-btn-secondary-bg: var(--surface-muted);
+  --cc-btn-secondary-color: var(--text-strong);
+  --cc-btn-secondary-border-color: var(--surface-border);
+  --cc-btn-secondary-hover-bg: var(--surface);
+  --cc-btn-secondary-hover-color: var(--text-strong);
+  --cc-btn-secondary-hover-border-color: var(--surface-border);
+  --cc-separator-border-color: var(--surface-border);
+  --cc-link-color: var(--accent);
+  --cc-toggle-on-bg: var(--accent);
+  --cc-toggle-off-bg: var(--text-muted);
+  --cc-cookie-category-block-bg: var(--surface-muted);
+  --cc-cookie-category-block-border: var(--surface-border);
+  --cc-cookie-category-block-hover-bg: var(--surface);
+  --cc-cookie-category-block-hover-border: var(--surface-border);
+  --cc-cookie-category-expanded-block-bg: var(--surface);
+  --cc-cookie-category-expanded-block-hover-bg: var(--surface-muted);
+  --cc-toggle-on-knob-bg: #fff;
+  --cc-toggle-off-knob-bg: #fff;
+  --cc-toggle-enabled-icon-color: #fff;
+  --cc-toggle-disabled-icon-color: #fff;
+  --cc-toggle-readonly-bg: var(--surface-muted);
+  --cc-toggle-readonly-knob-bg: var(--text-muted);
+  --cc-toggle-readonly-knob-icon-color: var(--text-strong);
+  --cc-footer-bg: var(--surface-muted);
+  --cc-footer-color: var(--text-muted);
+  --cc-footer-border-color: var(--surface-border);
+  --cc-overlay-bg: rgba(0, 0, 0, 0.5);
+}
+
+#cc-main .cc-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-end: 0.4em;
+  vertical-align: middle;
+}
+/* Override library’s #cc-main svg { fill: none } so button icons are visible */
+#cc-main .cc-btn-icon svg {
+  fill: currentColor;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  max-width: 1em;
+  max-height: 1em;
 }
 
 @layer base {
@@ -180,5 +239,11 @@
 
   :root[data-theme="dark"] .fill-neutral-700 {
     fill: #d1d5db !important;
+  }
+
+  /* Footer </> chip: ensure contrast in dark theme */
+  :root[data-theme="dark"] footer code {
+    background-color: var(--surface-muted) !important;
+    color: var(--text-strong) !important;
   }
 }

@@ -1,0 +1,9 @@
+<div
+  class="field-readonly surface-panel rounded-xl h-11 sm:h-12 w-full px-3 sm:px-4 flex items-center text-[var(--text-strong)]"
+>
+  @if (value()) {
+  <span class="truncate">{{ value() }}</span>
+  } @else {
+  <span class="text-[var(--text-muted)]">{{ placeholder() }}</span>
+  }
+</div>

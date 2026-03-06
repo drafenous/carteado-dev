@@ -1,0 +1,39 @@
+<div
+  class="select-options-panel surface-panel rounded-xl overflow-hidden shadow-lg border border-[color:var(--surface-border)] py-1 min-w-full"
+  role="listbox"
+>
+  @if (placeholder()) {
+  <button
+    type="button"
+    role="option"
+    [attr.aria-selected]="selectedValue() === ''"
+    [class.select-option--highlighted]="highlightedIndex() === 0"
+    [class.select-option--selected]="selectedValue() === ''"
+    class="select-option w-full text-left px-4 py-2.5 text-[var(--text-muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-strong)] transition-colors flex items-center justify-between gap-2"
+    (click)="selectOption('')"
+    (mouseenter)="highlightOption(0)"
+  >
+    <span>{{ placeholder() }}</span>
+    @if (selectedValue() === '') {
+    <fa-icon [icon]="ICONS.check" [fixedWidth]="true" class="text-[var(--accent)] shrink-0" />
+    }
+  </button>
+  }
+  @for (opt of options(); track opt.value; let i = $index) {
+  <button
+    type="button"
+    role="option"
+    [attr.aria-selected]="selectedValue() === opt.value"
+    [class.select-option--highlighted]="highlightedIndex() === (placeholder() ? i + 1 : i)"
+    [class.select-option--selected]="selectedValue() === opt.value"
+    class="select-option w-full text-left px-4 py-2.5 text-[var(--text-strong)] hover:bg-[var(--surface-muted)] transition-colors flex items-center justify-between gap-2"
+    (click)="selectOption(opt.value)"
+    (mouseenter)="highlightOption(placeholder() ? i + 1 : i)"
+  >
+    <span>{{ opt.label }}</span>
+    @if (selectedValue() === opt.value) {
+    <fa-icon [icon]="ICONS.check" [fixedWidth]="true" class="text-[var(--accent)] shrink-0" />
+    }
+  </button>
+  }
+</div>

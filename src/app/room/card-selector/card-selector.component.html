@@ -8,16 +8,12 @@
             <label for="cardModel" class="block text-sm font-medium text-neutral-700 mb-1">
               {{ 'cardSelector.cardDeck' | t }}
             </label>
-            <select
-              id="cardModel"
-              class="w-full h-11 rounded border border-neutral-300 px-3"
-              [ngModel]="selectedModelId"
+            <app-select
+              inputId="cardModel"
+              [options]="cardDeckOptions"
+              [(ngModel)]="selectedModelId"
               (ngModelChange)="handleSelectModel($event)"
-            >
-              @for (model of allModels; track model.id) {
-              <option [value]="model.id">{{ model.name }}</option>
-              }
-            </select>
+            />
           </div>
 
           <div>
@@ -27,7 +23,7 @@
             <input
               id="ticketId"
               type="text"
-              class="w-full h-11 rounded border border-neutral-300 px-3"
+              class="surface-panel rounded-xl block h-11 sm:h-12 w-full px-3 sm:px-4 text-[var(--text-strong)]"
               [placeholder]="'cardSelector.ticketPlaceholder' | t"
               [ngModel]="ticketIdDraft"
               (ngModelChange)="handleTicketIdInput($event)"
@@ -41,18 +37,14 @@
             <label for="cardModelReadonly" class="block text-sm font-medium text-neutral-700 mb-1">
               {{ 'cardSelector.cardDeck' | t }}
             </label>
-            <div id="cardModelReadonly" class="h-11 rounded border border-neutral-200 bg-neutral-50 px-3 text-neutral-700 flex items-center">
-              {{ effectiveModel.name }}
-            </div>
+            <app-field-readonly id="cardModelReadonly" [value]="effectiveModel.name" [placeholder]="'-'" />
           </div>
 
           <div>
             <label for="ticketIdReadonly" class="block text-sm font-medium text-neutral-700 mb-1">
               {{ 'cardSelector.ticketId' | t }}
             </label>
-            <div id="ticketIdReadonly" class="h-11 rounded border border-neutral-200 bg-neutral-50 px-3 text-neutral-700 flex items-center">
-              {{ ticketId() || '-' }}
-            </div>
+            <app-field-readonly id="ticketIdReadonly" [value]="ticketId() || ''" [placeholder]="'-'" />
           </div>
         </div>
         }
@@ -61,7 +53,7 @@
       @if (isAdmin()) {
       <div class="flex flex-wrap gap-2 md:pt-6">
         <app-tooltip [text]="'cardSelector.importDeckJson' | t">
-          <label class="btn-minimal inline-flex items-center justify-center h-9 w-9 text-neutral-800">
+          <label class="btn-minimal inline-flex items-center justify-center h-12 w-12 text-neutral-800">
             <input
               type="file"
               accept="application/json,.json"
@@ -74,7 +66,7 @@
         <app-tooltip [text]="'cardSelector.exportCurrentDeck' | t">
           <button
             type="button"
-            class="btn-minimal inline-flex items-center justify-center h-9 w-9 disabled:opacity-50"
+            class="btn-minimal inline-flex items-center justify-center h-12 w-12 disabled:opacity-50"
             [disabled]="selectedModel.isPreset"
             (click)="handleExportCustomModel()"
           >
@@ -134,7 +126,7 @@
           <input
             id="deckName"
             type="text"
-            class="w-full rounded border border-neutral-300 px-3 py-2"
+            class="surface-panel rounded-xl block h-11 sm:h-12 w-full px-3 sm:px-4 text-[var(--text-strong)]"
             [placeholder]="'cardSelector.deckNamePlaceholder' | t"
             [(ngModel)]="newModelName"
           />
@@ -143,7 +135,7 @@
           <label for="cardValues" class="block text-sm font-medium text-neutral-700 mb-1">{{ 'cardSelector.cardValues' | t }}</label>
           <textarea
             id="cardValues"
-            class="w-full rounded border border-neutral-300 px-3 py-2 min-h-20 sm:min-h-24 text-sm sm:text-base"
+            class="surface-panel rounded-xl block w-full px-3 sm:px-4 py-3 min-h-20 sm:min-h-24 text-sm sm:text-base text-[var(--text-strong)]"
             [placeholder]="'cardSelector.cardValuesPlaceholder' | t"
             [(ngModel)]="newModelCardsInput"
             rows="3"
@@ -155,11 +147,11 @@
             @for (card of previewCards; track card.display) {
             @if (card.display) {
             <span
-              class="inline-flex items-center gap-1 rounded border border-neutral-200 bg-neutral-50 px-2 py-1 text-sm"
+              class="inline-flex items-center gap-1 rounded border border-[color:var(--surface-border)] bg-[var(--surface-muted)] px-2 py-1 text-sm text-[var(--text-strong)]"
             >
               {{ card.display }}
               @if (card.value != null && card.value > 0) {
-              <span class="text-xs text-neutral-500">= {{ card.value }}</span>
+              <span class="text-xs text-[var(--text-muted)]">= {{ card.value }}</span>
               }
             </span>
             }
@@ -169,9 +161,10 @@
         </div>
         <button
           type="button"
-          class="btn-primary px-3 py-2 sm:px-4 text-sm w-fit"
+          class="btn-primary px-3 py-2 sm:px-4 text-sm w-fit inline-flex items-center gap-2"
           (click)="handleCreateCustomModel()"
         >
+          <fa-icon [icon]="ICONS.floppyDisk" [fixedWidth]="true" />
           {{ 'cardSelector.saveDeck' | t }}
         </button>
       </div>

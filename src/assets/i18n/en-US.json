@@ -18,6 +18,8 @@
     "fullstack": "Fullstack",
     "devops": "DevOps",
     "techlead": "Tech Lead",
+    "po": "Product Owner",
+    "sm": "Scrum Master",
     "other": "Other",
     "unspecified": "Unspecified"
   },
@@ -43,6 +45,9 @@
     "profileRole": "Profile role",
     "selectRole": "Select a role",
     "describeRole": "Describe your role",
+    "errorNameRequired": "Please enter your name.",
+    "errorRoleRequired": "Please select a role.",
+    "errorRoleOtherRequired": "Please describe your role when selecting \"Other\".",
     "newRoom": "New room",
     "createRoom": "Create room",
     "joinWithCode": "Join with code",
@@ -90,8 +95,8 @@
     "donate": "Donate"
   },
   "about": {
-    "title": "About Carteado",
-    "intro": "Carteado is a free Planning Poker tool for estimating work with development teams. Create rooms, invite your team, and vote in real time.",
+    "title": "About Carteado Dev",
+    "intro": "Carteado Dev is a free Planning Poker tool for estimating work with development teams. Create rooms, invite your team, and vote in real time.",
     "howItWorks": "How it works",
     "howStep1": "Create a room or join with an existing code",
     "howStep2": "Share the room link or code with your team",
@@ -105,7 +110,7 @@
     "feature4": "Voting history by round",
     "feature5": "Summary with average, min, max and sum of votes",
     "technologies": "Technologies",
-    "techList": "Angular, Tailwind CSS, WebSocket, Node.js",
+    "techList": "Angular, Tailwind CSS, Partykit WebSocket and Node.js",
     "backToHome": "Back to home"
   },
   "csv": {
@@ -166,6 +171,33 @@
     "errorReadSelectedFile": "Failed to read the selected file.",
     "errorDuplicateCards": "Duplicate card(s): {{items}}",
     "errorDuplicateValue": "Duplicate value {{value}}: {{items}}"
+  },
+  "cookieConsent": {
+    "consentModal": {
+      "title": "We use cookies",
+      "description": "We use cookies to improve your experience, remember your preferences, and analyze site traffic. You can accept all, only necessary, or manage your preferences.",
+      "acceptAllBtn": "Accept all",
+      "acceptNecessaryBtn": "Accept necessary only",
+      "showPreferencesBtn": "Manage preferences",
+      "closeIconLabel": "Close"
+    },
+    "preferencesModal": {
+      "title": "Cookie preferences",
+      "acceptAllBtn": "Accept all",
+      "acceptNecessaryBtn": "Accept necessary only",
+      "savePreferencesBtn": "Save",
+      "closeIconLabel": "Close"
+    },
+    "sections": {
+      "necessary": {
+        "title": "Necessary",
+        "description": "Essential cookies for the site to work. They cannot be disabled."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Cookies that help us understand how visitors use the site (e.g. Google Analytics)."
+      }
+    }
   },
   "contextMenu": {
     "turnSpectator": "Turn as spectator",

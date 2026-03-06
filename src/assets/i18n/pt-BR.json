@@ -18,6 +18,8 @@
     "fullstack": "Fullstack",
     "devops": "DevOps",
     "techlead": "Tech Lead",
+    "po": "Product Owner",
+    "sm": "Scrum Master",
     "other": "Outro",
     "unspecified": "Não informado"
   },
@@ -43,6 +45,9 @@
     "profileRole": "Função no time",
     "selectRole": "Selecione uma função",
     "describeRole": "Descreva sua função",
+    "errorNameRequired": "Informe seu nome.",
+    "errorRoleRequired": "Selecione uma função.",
+    "errorRoleOtherRequired": "Descreva sua função ao selecionar \"Outro\".",
     "newRoom": "Nova sala",
     "createRoom": "Criar sala",
     "joinWithCode": "Entrar com código",
@@ -90,8 +95,8 @@
     "donate": "Doar"
   },
   "about": {
-    "title": "Sobre o Carteado",
-    "intro": "Carteado é uma ferramenta gratuita de Planning Poker para estimar trabalho com times de desenvolvimento. Crie salas, convide sua equipe e vote em tempo real.",
+    "title": "Sobre o Carteado Dev",
+    "intro": "Carteado Dev é uma ferramenta gratuita de Planning Poker para estimar trabalho com times de desenvolvimento. Crie salas, convide sua equipe e vote em tempo real.",
     "howItWorks": "Como funciona",
     "howStep1": "Crie uma sala ou entre com um código existente",
     "howStep2": "Compartilhe o link ou o código da sala com sua equipe",
@@ -105,7 +110,7 @@
     "feature4": "Histórico de votação por round",
     "feature5": "Resumo com média, mínimo, máximo e soma dos votos",
     "technologies": "Tecnologias",
-    "techList": "Angular, Tailwind CSS, WebSocket, Node.js",
+    "techList": "Angular, Tailwind CSS, Partykit WebSocket e Node.js",
     "backToHome": "Voltar para início"
   },
   "csv": {
@@ -166,6 +171,33 @@
     "errorReadSelectedFile": "Falha ao ler o arquivo selecionado.",
     "errorDuplicateCards": "Carta(s) duplicada(s): {{items}}",
     "errorDuplicateValue": "Valor duplicado {{value}}: {{items}}"
+  },
+  "cookieConsent": {
+    "consentModal": {
+      "title": "Usamos cookies",
+      "description": "Usamos cookies para melhorar sua experiência, lembrar suas preferências e analisar o tráfego do site. Você pode aceitar todos, apenas os necessários ou gerenciar suas preferências.",
+      "acceptAllBtn": "Aceitar todos",
+      "acceptNecessaryBtn": "Aceitar apenas necessários",
+      "showPreferencesBtn": "Gerenciar preferências",
+      "closeIconLabel": "Fechar"
+    },
+    "preferencesModal": {
+      "title": "Preferências de cookies",
+      "acceptAllBtn": "Aceitar todos",
+      "acceptNecessaryBtn": "Aceitar apenas necessários",
+      "savePreferencesBtn": "Salvar",
+      "closeIconLabel": "Fechar"
+    },
+    "sections": {
+      "necessary": {
+        "title": "Necessários",
+        "description": "Cookies essenciais para o funcionamento do site. Não podem ser desativados."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Cookies que nos ajudam a entender como os visitantes usam o site (ex.: Google Analytics)."
+      }
+    }
   },
   "contextMenu": {
     "turnSpectator": "Tornar espectador",

@@ -1,0 +1,43 @@
+<div
+  #selectRoot
+  class="relative"
+  [attr.aria-expanded]="isOpen()"
+  aria-haspopup="listbox"
+  [attr.aria-disabled]="disabled() || disabledState()"
+  role="combobox"
+  [attr.aria-controls]="inputId() ? inputId() + '-listbox' : null"
+>
+  <button
+    type="button"
+    [id]="inputId()"
+    class="app-select-trigger surface-panel relative w-full h-11 sm:h-12 rounded-xl px-3 sm:px-4 pr-10 text-left text-[var(--text-strong)] border border-[color:var(--surface-border)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-between"
+    [class.text-[var(--text-muted)]]="!value() && placeholder()"
+    [disabled]="disabled() || disabledState()"
+    (click)="toggleOpen(); $event.stopPropagation()"
+  >
+    <span class="truncate">{{ getDisplayLabel() }}</span>
+    <fa-icon
+      [icon]="ICONS.chevronDown"
+      [fixedWidth]="true"
+      class="absolute right-3 sm:right-4 shrink-0 transition-transform duration-200"
+      [class.rotate-180]="isOpen()"
+    />
+  </button>
+
+  @if (isOpen()) {
+  <div
+    class="absolute left-0 right-0 top-full mt-1 z-50"
+    [id]="inputId() ? inputId() + '-listbox' : null"
+    role="presentation"
+  >
+    <app-select-options
+      [options]="options()"
+      [selectedValue]="value()"
+      [placeholder]="placeholder()"
+      [highlightedIndex]="highlightedIndex()"
+      (optionSelected)="onOptionSelected($event)"
+      (optionHighlighted)="onOptionHighlighted($event)"
+    />
+  </div>
+  }
+</div>

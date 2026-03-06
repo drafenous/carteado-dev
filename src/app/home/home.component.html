@@ -40,25 +40,28 @@
           type="text"
           [placeholder]="'home.namePlaceholder' | t"
           class="surface-panel rounded-xl block h-11 sm:h-12 w-full px-4"
+          [class.border-red-500]="userNameControl.invalid && userNameControl.touched"
           autocomplete="name"
           required
           [formControl]="userNameControl"
         />
+        @if (userNameControl.invalid && userNameControl.touched) {
+        <p class="mt-1 text-sm text-red-600" role="alert">{{ 'home.errorNameRequired' | t }}</p>
+        }
       </div>
       <div>
         <label for="teamRole" class="block text-sm font-medium text-neutral-700 mb-1">{{ 'home.profileRole' | t }}</label>
-        <select id="teamRole" class="surface-panel w-full rounded-xl h-11 sm:h-12 px-3" [formControl]="teamRoleControl">
-          <option value="">{{ 'home.selectRole' | t }}</option>
-          <option value="frontend">{{ 'roles.frontend' | t }}</option>
-          <option value="backend">{{ 'roles.backend' | t }}</option>
-          <option value="staff">{{ 'roles.staff' | t }}</option>
-          <option value="engineer">{{ 'roles.engineer' | t }}</option>
-          <option value="qa">{{ 'roles.qa' | t }}</option>
-          <option value="fullstack">{{ 'roles.fullstack' | t }}</option>
-          <option value="devops">{{ 'roles.devops' | t }}</option>
-          <option value="techlead">{{ 'roles.techlead' | t }}</option>
-          <option value="other">{{ 'roles.other' | t }}</option>
-        </select>
+        <div [class.ring-2]="teamRoleControl.invalid && teamRoleControl.touched" [class.ring-red-500]="teamRoleControl.invalid && teamRoleControl.touched" [class.rounded-xl]="teamRoleControl.invalid && teamRoleControl.touched">
+          <app-select
+            inputId="teamRole"
+            [options]="teamRoleOptions"
+            [placeholder]="'home.selectRole' | t"
+            [formControl]="teamRoleControl"
+          />
+        </div>
+        @if (teamRoleControl.invalid && teamRoleControl.touched) {
+        <p class="mt-1 text-sm text-red-600" role="alert">{{ 'home.errorRoleRequired' | t }}</p>
+        }
       </div>
       @if (teamRoleControl.value === 'other') {
       <div class="md:col-span-2">
@@ -67,9 +70,13 @@
           type="text"
           [placeholder]="'home.describeRole' | t"
           class="surface-panel rounded-xl block h-11 sm:h-12 w-full px-4"
+          [class.border-red-500]="teamRoleOtherControl.invalid && teamRoleOtherControl.touched"
           autocomplete="organization-title"
           [formControl]="teamRoleOtherControl"
         />
+        @if (teamRoleOtherControl.invalid && teamRoleOtherControl.touched) {
+        <p class="mt-1 text-sm text-red-600" role="alert">{{ 'home.errorRoleOtherRequired' | t }}</p>
+        }
       </div>
       }
     </div>

@@ -2,17 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, effect, EventEmitter, Output, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronDown, faChevronRight, faFileImport, faFileExport, faXmark, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronRight, faFileImport, faFileExport, faFloppyDisk, faXmark, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { CardModel } from '../../core/models/card-model';
 import { PopupAlertComponent } from '../../common/popup-alert/popup-alert.component';
 import { TooltipComponent } from '../../common/tooltip/tooltip.component';
 import { TranslatePipe } from '../../common/i18n/translate.pipe';
 import { I18nService } from '../../core/services/i18n.service';
+import { LocalStorageService } from '../../core/services/local-storage.service';
+import { SelectComponent, SelectOption } from '../../common/select/select.component';
+import { FieldReadonlyComponent } from '../../common/field-readonly/field-readonly.component';
+
+const CUSTOM_DECKS_STORAGE_KEY = 'carteado-dev-custom-decks';
 
 @Component({
   selector: 'app-card-selector',
-  imports: [CommonModule, FormsModule, FontAwesomeModule, PopupAlertComponent, TooltipComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, PopupAlertComponent, TooltipComponent, TranslatePipe, SelectComponent, FieldReadonlyComponent],
   templateUrl: './card-selector.component.html',
   styleUrl: './card-selector.component.scss',
 })
@@ -26,7 +31,7 @@ export class CardSelectorComponent implements OnDestroy {
   @Output() modelChanged = new EventEmitter<CardModel>();
   @Output() ticketIdChanged = new EventEmitter<string>();
 
-  public ICONS = { chevronDown: faChevronDown, chevronRight: faChevronRight, fileImport: faFileImport, fileExport: faFileExport, xmark: faXmark, check: faCheck };
+  public ICONS = { chevronDown: faChevronDown, chevronRight: faChevronRight, fileImport: faFileImport, fileExport: faFileExport, floppyDisk: faFloppyDisk, xmark: faXmark, check: faCheck };
   public presets: CardModel[] = [
     {
       id: 'fibonacci',
@@ -94,6 +99,26 @@ export class CardSelectorComponent implements OnDestroy {
 
   public customModels: CardModel[] = [];
   public selectedModelId = 'fibonacci';
+
+  private get storedCustomDecks(): CardModel[] {
+    try {
+      const raw = this.localStorage.getItem(CUSTOM_DECKS_STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(
+        (m): m is CardModel =>
+          m && typeof m === 'object' && typeof m.id === 'string' && typeof m.name === 'string' && Array.isArray(m.cards)
+      );
+    } catch {
+      return [];
+    }
+  }
+
+  private saveCustomDecksToStorage(): void {
+    const toStore = this.customModels.filter((m) => !m.isPreset);
+    this.localStorage.setItem(CUSTOM_DECKS_STORAGE_KEY, JSON.stringify(toStore));
+  }
   public selectedCardValue: string | null = null;
   public ticketIdDraft = '';
 
@@ -113,7 +138,11 @@ export class CardSelectorComponent implements OnDestroy {
   private ticketIdSub: Subscription;
   private lastSentTicketId = '';
 
-  constructor(private i18n: I18nService) {
+  constructor(
+    private i18n: I18nService,
+    private localStorage: LocalStorageService
+  ) {
+    this.customModels = [...this.storedCustomDecks];
     this.ticketIdSub = this.ticketIdInput$
       .pipe(
         debounceTime(350),
@@ -157,6 +186,10 @@ export class CardSelectorComponent implements OnDestroy {
     return base;
   }
 
+  public get cardDeckOptions(): SelectOption[] {
+    return this.allModels.map((m) => ({ value: m.id, label: m.name }));
+  }
+
   public get selectedModel(): CardModel {
     const model = this.allModels.find((item) => item.id === this.selectedModelId);
     return model ?? this.presets[0];
@@ -179,12 +212,14 @@ export class CardSelectorComponent implements OnDestroy {
   private applyImportedModel(model: CardModel): void {
     this.customModels = [...this.customModels, model];
     this.selectedModelId = model.id;
+    this.saveCustomDecksToStorage();
     if (this.isAdmin()) this.emitCurrentModel();
   }
 
   private replaceCustomModel(model: CardModel): void {
     this.customModels = this.customModels.map((m) => (m.name.toLowerCase() === model.name.toLowerCase() ? model : m));
     this.selectedModelId = model.id;
+    this.saveCustomDecksToStorage();
     if (this.isAdmin()) this.emitCurrentModel();
   }
 
@@ -378,6 +413,7 @@ export class CardSelectorComponent implements OnDestroy {
     this.newModelName = '';
     this.newModelCardsInput = '';
     this.createError = '';
+    this.saveCustomDecksToStorage();
     if (this.isAdmin()) this.emitCurrentModel();
   }
 

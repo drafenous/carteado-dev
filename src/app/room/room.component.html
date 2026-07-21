@@ -186,7 +186,7 @@
 
       <div class="min-w-0">
         <div class="text-sm font-semibold text-[var(--text-strong)] mb-2">{{ 'room.votesPerParticipant' | t }}</div>
-        @if ((summary.perUser?.length ?? 0) > 0) {
+        @if (summary.perUser.length > 0) {
         <ul class="max-h-48 sm:max-h-56 overflow-y-auto space-y-2 pr-1">
           @for (p of summary.perUser; track p.userId) {
           <li class="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 bg-[var(--surface-muted)] border border-[color:var(--surface-border)]">

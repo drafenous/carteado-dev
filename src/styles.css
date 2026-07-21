@@ -160,9 +160,9 @@
   }
 
   .poker-card {
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-    border-radius: 12px;
+    width: 3.5rem;
+    height: 4.9rem;
+    border-radius: 10px;
     border: 1px solid var(--soft-border);
     background: var(--surface);
     color: var(--text-strong);
@@ -170,6 +170,13 @@
     position: relative;
     transition: transform 160ms ease, box-shadow 160ms ease, border-color 120ms ease;
     transform-style: preserve-3d;
+  }
+
+  @media (min-width: 640px) {
+    .poker-card {
+      width: 4rem;
+      height: 5.6rem;
+    }
   }
 
   .poker-card:hover:not(:disabled) {
@@ -193,16 +200,59 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: 10px;
     backface-visibility: hidden;
+  }
+
+  .poker-card-corner {
+    position: absolute;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .poker-card-corner-tl {
+    top: 0.35rem;
+    left: 0.4rem;
+  }
+
+  .poker-card-corner-br {
+    bottom: 0.35rem;
+    right: 0.4rem;
+    transform: rotate(180deg);
+  }
+
+  .poker-card-center {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 640px) {
+    .poker-card-corner {
+      font-size: 0.8rem;
+    }
+
+    .poker-card-center {
+      font-size: 1.4rem;
+    }
   }
 
   .poker-card-face-back {
     transform: rotateY(180deg);
-    font-size: 0.72rem;
-    padding: 0.125rem 0.25rem;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.25rem;
     text-align: center;
-    line-height: 1.1;
+    line-height: 1.15;
+    font-weight: 600;
   }
 }
 

@@ -20,6 +20,8 @@
     "techlead": "Tech Lead",
     "po": "Product Owner",
     "sm": "Scrum Master",
+    "productOwner": "Product Owner",
+    "scrumMaster": "Scrum Master",
     "other": "Other",
     "unspecified": "Unspecified"
   },

@@ -208,6 +208,9 @@ export class RoomComponent implements OnDestroy {
     const summary = this.displayedSummary;
     if (!summary) return [];
 
+    const toSpecialOnly = (items: { card: string; value: number; ignored: boolean }[]) =>
+      items.filter((item) => item.ignored || String(item.value) !== String(item.card));
+
     // Historical rounds don't persist deck snapshots yet, so we build legend from round votes.
     if (this.selectedRoundForSummary) {
       const seen = new Set<string>();
@@ -221,21 +224,23 @@ export class RoomComponent implements OnDestroy {
           ignored: item.numericValue === 0,
         });
       }
-      return items;
+      return toSpecialOnly(items);
     }
 
     const model = this.roomCardModel;
     if (!model) return [];
-    return model.cards.map((card) => {
-      let value = 0;
-      if (model.cardValues && model.cardValues[card] != null) {
-        value = model.cardValues[card];
-      } else {
-        const n = parseInt(String(card), 10);
-        if (!isNaN(n)) value = n;
-      }
-      return { card, value, ignored: value === 0 };
-    });
+    return toSpecialOnly(
+      model.cards.map((card) => {
+        let value = 0;
+        if (model.cardValues && model.cardValues[card] != null) {
+          value = model.cardValues[card];
+        } else {
+          const n = parseInt(String(card), 10);
+          if (!isNaN(n)) value = n;
+        }
+        return { card, value, ignored: value === 0 };
+      })
+    );
   }
 
   /** Summary to display: selected historical round or current */
